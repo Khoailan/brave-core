@@ -465,7 +465,7 @@ if (should_generate_symbols) {
       output = "$brave_dist_dir/$brave_product_name-v$brave_version-$brave_platform-$target_arch-native-symbols.7z"
       dir_inputs = [ "$brave_product_name.pdb.syms" ]
 
-      deps = [ "//brave/app/win:generate_breakpad_symbols" ]
+      deps = [ "//brave/app/win:generate_symbols" ]
     }
   } else if (is_mac) {
     copy("create_native_symbols_dist") {
