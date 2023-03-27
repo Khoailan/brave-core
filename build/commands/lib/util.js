@@ -558,8 +558,6 @@ const util = {
   },
 
   generateNinjaFiles: (options = config.defaultOptions) => {
-    util.buildNativeRedirectCC()
-
     console.log('generating ninja files...')
 
     if (process.platform === 'win32') {
@@ -695,8 +693,10 @@ const util = {
       args.push('--js')
     if (options.python)
       args.push('--python')
-     if (options.rust)
+    if (options.rust)
       args.push('--rust-fmt')
+    else
+      args.push('--no-rust-fmt')
     if (options.swift)
       args.push('--swift-format')
     util.run(cmd, args, cmd_options)

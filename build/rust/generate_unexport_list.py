@@ -14,23 +14,29 @@ import sys
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
                  os.pardir, 'build'))
-import action_helpers  # pylint: disable=wrong-import-position
 
 
 def run(exe, input_file, output_file):
-    cmdargs = [exe]
-    cmdargs += ["--extern-only"]
-    cmdargs += ["--no-sort"]
-    cmdargs += ["--just-symbol-name"]
-    cmdargs += [input_file]
-    job = subprocess.run(cmdargs, capture_output=True, check=False)
-    if job.returncode != 0:
-        messages = job.stderr.decode('utf-8')
-        if messages.rstrip():
-            print(messages, file=sys.stderr)
-        return job.returncode
-    with action_helpers.atomic_output(output_file) as output:
-        output.write(job.stdout)
+    rlibs = []
+    with open(input_file, "r", encoding="utf8") as f:
+        for line in f:
+            rlibs.append(line)
+
+    with open(output_file, "w", encoding="utf8") as f:
+        for rlib in rlibs:
+            cmdargs = [exe]
+            cmdargs += ["--extern-only"]
+            cmdargs += ["--no-sort"]
+            cmdargs += ["--just-symbol-name"]
+            cmdargs += [rlib.strip()]
+            job = subprocess.run(cmdargs, capture_output=True, check=False)
+            if job.returncode != 0:
+                messages = job.stderr.decode('utf-8')
+                if messages.rstrip():
+                    print(messages, file=sys.stderr)
+                return job.returncode
+            f.write(job.stdout.decode('utf-8'))
+
     return 0
 
 

@@ -1,0 +1,13 @@
+diff --git a/build/toolchain/win/toolchain.gni b/build/toolchain/win/toolchain.gni
+index cb4e939c3b258ca08baba96a4e96d0281fd58024..8641b544450fe9941852793d2f8fa1c19d06df5d 100644
+--- a/build/toolchain/win/toolchain.gni
++++ b/build/toolchain/win/toolchain.gni
+@@ -243,7 +243,7 @@ template("single_msvc_toolchain") {
+ 
+       if (toolchain_args.current_cpu == "arm64") {
+         if (toolchain_is_clang) {
+-          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=arm64-windows"
++          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=aarch64-pc-windows"
+           if (host_os == "win") {
+             # Flip the slashes so that copy/paste of the command works.
+             ml = string_replace(ml, "/", "\\")

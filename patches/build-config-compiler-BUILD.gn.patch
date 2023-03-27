@@ -1,0 +1,21 @@
+diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
+index 23a8da453c3d29ab8efeacbb7da6e01e280afd55..fd8d18b3c1e121477139feba4fa1edbdd51c4f7b 100644
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -1005,6 +1005,7 @@ config("compiler") {
+       "-Zpanic_abort_tests",
+     ]
+   }
++  rustflags -= brave_remove_rustflags
+ }
+ 
+ # The BUILDCONFIG file sets this config on targets by default, which means when
+@@ -2534,7 +2535,7 @@ config("symbols") {
+       if (use_dwarf5) {
+         cflags += [ "-gdwarf-5" ]
+         rustflags += [ "-Zdwarf-version=5" ]
+-      } else if (!is_apple) {
++      } else {
+         # Recent clang versions default to DWARF5 on Linux, and Android is about
+         # to switch. TODO: Adopt that in controlled way.
+         # Apple platforms still default to 4, so the flag is not needed there.

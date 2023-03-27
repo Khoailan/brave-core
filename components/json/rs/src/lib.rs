@@ -20,6 +20,7 @@ mod ffi {
     }
 }
 
+#[rustfmt::skip]
 // Parses and re-serializes json with the value at path converted from a uint64
 // to a string representation of the same number.
 // Returns an empty String if such conversion is not possible.
@@ -66,6 +67,7 @@ pub fn convert_uint64_value_to_string(path: &str, json: &str, optional: bool) ->
     serde_json::to_string(&unwrapped_value).unwrap_or_else(|_| "".into())
 }
 
+#[rustfmt::skip]
 // Parses and re-serializes json with the value at path converted from a int64
 // to a string representation of the same number.
 // Returns an empty String if such conversion is not possible.
@@ -113,6 +115,7 @@ pub fn convert_int64_value_to_string(path: &str, json: &str, optional: bool) -> 
     serde_json::to_string(&unwrapped_value).unwrap_or_else(|_| "".into())
 }
 
+#[rustfmt::skip]
 // Parses and re-serializes json with the value at path converted from a string
 // to a uint64 representation of the same number.
 // Returns an empty String if such conversion is not possible.
@@ -164,6 +167,7 @@ pub fn convert_string_value_to_uint64(path: &str, json: &str, optional: bool) ->
     String::new()
 }
 
+#[rustfmt::skip]
 // Parses and re-serializes json with the value at path converted from a string
 // to a int64 representation of the same number.
 // Returns an empty String if such conversion is not possible.
@@ -216,6 +220,7 @@ pub fn convert_string_value_to_int64(path: &str, json: &str, optional: bool) -> 
     String::new()
 }
 
+#[rustfmt::skip]
 // Parses and re-serializes json with uint64 values for the given key of the
 // object located at path_to_object for all objects in the array located at
 // path_to_array. Original json string will be returned if object array at path
@@ -277,6 +282,7 @@ pub fn convert_uint64_in_object_array_to_string(
     serde_json::to_string(&unwrapped_value).unwrap_or_else(|_| "".into())
 }
 
+#[rustfmt::skip]
 /// Parses and re-serializes json with all numbers (`u64`/`i64`/`f64`)
 /// converted to strings, applied recursively at the specified path.
 ///

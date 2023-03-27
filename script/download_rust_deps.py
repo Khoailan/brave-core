@@ -7,14 +7,13 @@
 
 import argparse
 import os
-import shutil
 import subprocess
 import sys
 
 import deps
 from deps_config import DEPS_PACKAGES_URL
 
-from lib.config import BRAVE_CORE_ROOT, CHROMIUM_ROOT
+from lib.config import BRAVE_CORE_ROOT
 from lib.util import get_host_os, get_host_arch, str2bool
 
 RUSTUP_PATH = os.path.join(BRAVE_CORE_ROOT, 'build', 'rustup')
@@ -168,34 +167,11 @@ def main():
             'rustup',
             ['component', 'add', 'rust-src', '--toolchain', toolchain],
             rustup_home)
-        # patch gcc.rs.patch
-        # https://github.com/rust-lang/rust/issues/102754#issuecomment-1421438735
-        patched_file = os.path.join(BRAVE_CORE_ROOT, 'build', 'rust',
-                                    'gcc.rs.patched')
-        orig_file = os.path.join(rustup_home, 'toolchains', toolchain, 'lib',
-                                 'rustlib', 'src', 'rust', 'library', 'std',
-                                 'src', 'personality', 'gcc.rs')
-        shutil.copyfile(patched_file, orig_file)
-
-    cxx_path = os.path.abspath(
-        os.path.join(CHROMIUM_ROOT, 'third_party', 'rust', 'cxx', 'v1'))
-
-    with open(os.path.join(cxx_path, "README.chromium"), "r",
-              encoding="utf8") as readme_file:
-        _VERSION_PREFIX = "Version: "
-        for line in readme_file:
-            if not line.startswith(_VERSION_PREFIX):
-                continue
-            cxx_version = line[len(_VERSION_PREFIX):].strip()
 
     tools = [{
         "name": "cbindgen",
         "version": "0.14.2",
         "locked": True,
-    }, {
-        "name": "cxxbridge-cmd",
-        "locked": True,
-        "version": cxx_version,
     }, {
         "name": "cargo-audit",
         "version": "0.17.5",
