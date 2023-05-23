@@ -14,10 +14,12 @@
 #include "brave/browser/ethereum_remote_client/buildflags/buildflags.h"
 #include "brave/browser/ui/webui/brave_adblock_internals_ui.h"
 #include "brave/browser/ui/webui/brave_adblock_ui.h"
+#include "brave/browser/ui/webui/brave_news_inspect/brave_news_inspect_ui.h"
 #include "brave/browser/ui/webui/brave_rewards_internals_ui.h"
 #include "brave/browser/ui/webui/brave_rewards_page_ui.h"
 #include "brave/browser/ui/webui/skus_internals_ui.h"
 #include "brave/components/brave_federated/features.h"
+#include "brave/components/brave_news/common/features.h"
 #include "brave/components/brave_rewards/common/rewards_util.h"
 #include "brave/components/brave_shields/common/features.h"
 #include "brave/components/constants/pref_names.h"
@@ -113,8 +115,9 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
     if (brave_wallet::IsNativeWalletEnabled()) {
       auto default_wallet =
           brave_wallet::GetDefaultEthereumWallet(profile->GetPrefs());
-      if (default_wallet == brave_wallet::mojom::DefaultWallet::CryptoWallets)
+      if (default_wallet == brave_wallet::mojom::DefaultWallet::CryptoWallets) {
         return new EthereumRemoteClientUI(web_ui, url.host());
+      }
       return new WalletPageUI(web_ui);
     }
 #if BUILDFLAG(ETHEREUM_REMOTE_CLIENT_ENABLED)
@@ -145,6 +148,10 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
   } else if (host == kBraveTipPanelHost &&
              brave_rewards::IsSupportedForProfile(profile)) {
     return new brave_rewards::TipPanelUI(web_ui);
+  } else if (base::FeatureList::IsEnabled(
+                 brave_news::features::kBraveNewsFeedUpdate) &&
+             host == kBraveNewsInspectHost) {
+    return new BraveNewsInspectUI(web_ui, url.host());
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_ANDROID)
   } else if (host == kWelcomeHost && !profile->IsGuestSession()) {
@@ -200,6 +207,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       (url.host_piece() == kIPFSWebUIHost &&
        ipfs::IpfsServiceFactory::IsIpfsEnabled(profile)) ||
 #endif  // BUILDFLAG(ENABLE_IPFS_INTERNALS_WEBUI)
+#if !BUILDFLAG(IS_ANDROID)
+      (base::FeatureList::IsEnabled(
+           brave_news::features::kBraveNewsFeedUpdate) &&
+       url.host_piece() == kBraveNewsInspectHost) ||
+#endif
 #if BUILDFLAG(IS_ANDROID)
       (url.is_valid() &&
        (url.spec() == base::StringPrintf("%s://%s", content::kChromeUIScheme,
@@ -274,8 +286,9 @@ WebUI::TypeID BraveWebUIControllerFactory::GetWebUIType(
     return WebUI::kNoWebUI;
   }
 #if BUILDFLAG(ENABLE_PLAYLIST_WEBUI)
-  if (playlist::PlaylistUI::ShouldBlockPlaylistWebUI(browser_context, url))
+  if (playlist::PlaylistUI::ShouldBlockPlaylistWebUI(browser_context, url)) {
     return WebUI::kNoWebUI;
+  }
 #endif
   Profile* profile = Profile::FromBrowserContext(browser_context);
   WebUIFactoryFunction function =
