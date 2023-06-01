@@ -36,8 +36,9 @@ void BraveContentsLayoutManager::Layout(views::View* contents_container) {
 
   int taken_left_width = 0;
   for (auto* view : left_side_candidate_views) {
-    if (!view || !view->GetVisible())
+    if (!view || !view->GetVisible()) {
       continue;
+    }
 
     auto width = view->GetPreferredSize().width();
     const gfx::Rect bounds(taken_left_width, 0, width, contents_height);
@@ -49,8 +50,9 @@ void BraveContentsLayoutManager::Layout(views::View* contents_container) {
   int taken_right_width = 0;
   int right_side_x = contents_container->GetLocalBounds().right();
   for (auto* view : right_side_candidate_views) {
-    if (!view || !view->GetVisible())
+    if (!view || !view->GetVisible()) {
       continue;
+    }
 
     auto width = view->GetPreferredSize().width();
     right_side_x -= width;
@@ -60,13 +62,13 @@ void BraveContentsLayoutManager::Layout(views::View* contents_container) {
   }
   contents_width -= taken_right_width;
 
-  if (reader_mode_panel_view_ && reader_mode_panel_view_->GetVisible()) {
-    contents_height -= reader_mode_panel_view_->GetPreferredSize().height();
+  if (reader_mode_toolbar_view_ && reader_mode_toolbar_view_->GetVisible()) {
+    contents_height -= reader_mode_toolbar_view_->GetPreferredSize().height();
   }
   gfx::Size container_size(contents_width, contents_height);
   gfx::Rect new_devtools_bounds;
   gfx::Rect new_contents_bounds;
-  gfx::Rect reader_mode_panel_bounds;
+  gfx::Rect reader_mode_toolbar_bounds;
 
   ApplyDevToolsContentsResizingStrategy(
       strategy_, container_size, &new_devtools_bounds, &new_contents_bounds);
@@ -74,19 +76,19 @@ void BraveContentsLayoutManager::Layout(views::View* contents_container) {
   new_devtools_bounds.Offset(taken_left_width, 0);
   new_contents_bounds.Offset(taken_left_width, 0);
 
-  if (reader_mode_panel_view_ && reader_mode_panel_view_->GetVisible()) {
-    reader_mode_panel_bounds.SetRect(
+  if (reader_mode_toolbar_view_ && reader_mode_toolbar_view_->GetVisible()) {
+    reader_mode_toolbar_bounds.SetRect(
         new_contents_bounds.x(), 0, new_contents_bounds.width(),
-        reader_mode_panel_view_->GetPreferredSize().height());
-    new_contents_bounds.set_y(reader_mode_panel_bounds.height());
+        reader_mode_toolbar_view_->GetPreferredSize().height());
+    new_contents_bounds.set_y(reader_mode_toolbar_bounds.height());
   }
   // DevTools cares about the specific position, so we have to compensate RTL
   // layout here.
   devtools_view_->SetBoundsRect(host_->GetMirroredRect(new_devtools_bounds));
   contents_view_->SetBoundsRect(host_->GetMirroredRect(new_contents_bounds));
 
-  if (reader_mode_panel_view_) {
-    reader_mode_panel_view_->SetBoundsRect(
-        host_->GetMirroredRect(reader_mode_panel_bounds));
+  if (reader_mode_toolbar_view_) {
+    reader_mode_toolbar_view_->SetBoundsRect(
+        host_->GetMirroredRect(reader_mode_toolbar_bounds));
   }
 }
