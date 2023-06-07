@@ -6,6 +6,6 @@
 #include "chrome/browser/chrome_browser_main_mac.h"
 #import "brave/browser/brave_app_controller_mac.h"
 
-#define AppController BraveAppController
+// #define AppController BraveAppController
 #include "src/chrome/browser/chrome_browser_main_mac.mm"
-#undef AppController
+// #undef AppController
