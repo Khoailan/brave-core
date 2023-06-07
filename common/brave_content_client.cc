@@ -9,10 +9,10 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "components/grit/brave_components_resources.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/flags_ui_resources.h"
 #include "content/public/common/url_constants.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "third_party/widevine/cdm/buildflags.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(IS_LINUX)
 #include "base/files/file_path.h"
