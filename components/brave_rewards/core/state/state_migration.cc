@@ -55,9 +55,12 @@ void StateMigration::Migrate(ResultCallback callback) {
     current_version = 0;
   }
 
-  if (is_testing &&
-      current_version == state_migration_target_version_for_testing) {
-    return std::move(callback).Run(mojom::Result::LEDGER_OK);
+  if (ledger_->is_testing()) {
+    int32_t target =
+        ledger_->state_migration_target_version_for_testing();  // IN-TEST
+    if (current_version == target) {
+      return std::move(callback).Run(mojom::Result::LEDGER_OK);
+    }
   }
 
   if (current_version == kCurrentVersionNumber) {

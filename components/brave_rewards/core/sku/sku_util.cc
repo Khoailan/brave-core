@@ -36,37 +36,25 @@ std::string GetBraveDestination(const std::string& wallet_type) {
 }
 
 std::string GetUpholdDestination() {
-  if (_environment == mojom::Environment::PRODUCTION) {
-    return kUpholdDestinationProduction;
+  switch (LedgerImpl::GetForCurrentSequence().environment()) {
+    case mojom::Environment::PRODUCTION:
+      return kUpholdDestinationProduction;
+    case mojom::Environment::STAGING:
+      return kUpholdDestinationStaging;
+    case mojom::Environment::DEVELOPMENT:
+      return kUpholdDestinationDev;
   }
-
-  if (_environment == mojom::Environment::STAGING) {
-    return kUpholdDestinationStaging;
-  }
-
-  if (_environment == mojom::Environment::DEVELOPMENT) {
-    return kUpholdDestinationDev;
-  }
-
-  NOTREACHED();
-  return kUpholdDestinationDev;
 }
 
 std::string GetGeminiDestination() {
-  if (_environment == mojom::Environment::PRODUCTION) {
-    return kGeminiDestinationProduction;
+  switch (LedgerImpl::GetForCurrentSequence().environment()) {
+    case mojom::Environment::PRODUCTION:
+      return kGeminiDestinationProduction;
+    case mojom::Environment::STAGING:
+      return kGeminiDestinationStaging;
+    case mojom::Environment::DEVELOPMENT:
+      return kGeminiDestinationDev;
   }
-
-  if (_environment == mojom::Environment::STAGING) {
-    return kGeminiDestinationStaging;
-  }
-
-  if (_environment == mojom::Environment::DEVELOPMENT) {
-    return kGeminiDestinationDev;
-  }
-
-  NOTREACHED();
-  return kGeminiDestinationDev;
 }
 
 }  // namespace sku

@@ -15,8 +15,6 @@
 
 namespace brave_rewards::internal {
 
-void set_ledger_client_for_logging(mojom::LedgerClient* ledger_client);
-
 void Log(const char* file,
          const int line,
          const int verbose_level,

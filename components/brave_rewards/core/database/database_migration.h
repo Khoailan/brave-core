@@ -24,14 +24,11 @@ class DatabaseMigration {
 
   void Start(uint32_t table_version, LegacyResultCallback callback);
 
-  static void SetTargetVersionForTesting(uint32_t version);
-
  private:
   void GenerateCommand(mojom::DBTransaction* transaction,
                        const std::string& query);
 
   const raw_ref<LedgerImpl> ledger_;
-  static uint32_t test_target_version_;
 };
 
 }  // namespace database

@@ -34,13 +34,6 @@
 
 namespace brave_rewards::internal {
 
-inline mojom::Environment _environment = mojom::Environment::PRODUCTION;
-inline bool is_debug = false;
-inline bool is_testing = false;
-inline int state_migration_target_version_for_testing = -1;
-inline int reconcile_interval = 0;  // minutes
-inline int retry_interval = 0;      // seconds
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 inline constexpr uint64_t kPublisherListRefreshInterval =
     7 * base::Time::kHoursPerDay * base::Time::kSecondsPerHour;
@@ -51,6 +44,8 @@ inline constexpr uint64_t kPublisherListRefreshInterval =
 
 class LedgerImpl : public mojom::Ledger {
  public:
+  static LedgerImpl& GetForCurrentSequence();
+
   explicit LedgerImpl(
       mojo::PendingAssociatedRemote<mojom::LedgerClient> ledger_client_remote);
 
@@ -74,6 +69,8 @@ class LedgerImpl : public mojom::Ledger {
   void SetTesting() override;
 
   void SetStateMigrationTargetVersionForTesting(int32_t version) override;
+
+  void SetDatabaseMigrationTargetVersionForTesting(uint32_t version);
 
   void GetEnvironment(GetEnvironmentCallback callback) override;
 
@@ -398,6 +395,24 @@ class LedgerImpl : public mojom::Ledger {
   // This method is virtualised for test-only purposes.
   virtual database::Database* database();
 
+  mojom::Environment environment() const { return environment_; }
+
+  bool is_debug() const { return is_debug_; }
+
+  int32_t reconcile_interval() const { return reconcile_interval_; }
+
+  int32_t retry_interval() const { return retry_interval_; }
+
+  bool is_testing() const { return is_testing_; }
+
+  int32_t state_migration_target_version_for_testing() const {
+    return state_migration_target_version_for_testing_;
+  }
+
+  uint32_t database_migration_target_version_for_testing() const {
+    return database_migration_target_version_for_testing_;
+  }
+
  private:
   enum class ReadyState {
     kUninitialized,
@@ -441,6 +456,14 @@ class LedgerImpl : public mojom::Ledger {
   bitflyer::Bitflyer bitflyer_;
   gemini::Gemini gemini_;
   uphold::Uphold uphold_;
+
+  mojom::Environment environment_ = mojom::Environment::PRODUCTION;
+  bool is_debug_ = false;
+  int32_t reconcile_interval_ = 0;  // minutes
+  int32_t retry_interval_ = 0;      // seconds
+  bool is_testing_ = false;
+  int32_t state_migration_target_version_for_testing_ = -1;
+  uint32_t database_migration_target_version_for_testing_ = 0;
 
   std::map<uint32_t, mojom::VisitData> current_pages_;
   uint64_t last_tab_active_time_ = 0;

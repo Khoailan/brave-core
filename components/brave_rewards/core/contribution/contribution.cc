@@ -131,7 +131,7 @@ void Contribution::Initialize() {
 }
 
 void Contribution::CheckContributionQueue() {
-  base::TimeDelta delay = is_testing
+  base::TimeDelta delay = ledger_->is_testing()
                               ? base::Seconds(1)
                               : util::GetRandomizedDelay(base::Seconds(15));
 
@@ -770,8 +770,8 @@ void Contribution::SetRetryTimer(const std::string& contribution_id,
     return;
   }
 
-  if (retry_interval) {
-    delay = base::Seconds(retry_interval);
+  if (ledger_->retry_interval()) {
+    delay = base::Seconds(ledger_->retry_interval());
   }
 
   BLOG(1, "Timer for contribution retry (" << contribution_id

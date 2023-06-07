@@ -16,14 +16,18 @@ namespace brave_rewards::internal {
 namespace {
 enum class UrlType { kOAuth, kAPI };
 
+mojom::Environment GetEnvironment() {
+  return LedgerImpl::GetForCurrentSequence().environment();
+}
+
 std::string GetUrl(UrlType type) {
   if (type == UrlType::kOAuth) {
-    return _environment == mojom::Environment::PRODUCTION
+    return GetEnvironment() == mojom::Environment::PRODUCTION
                ? BUILDFLAG(GEMINI_PRODUCTION_OAUTH_URL)
                : BUILDFLAG(GEMINI_SANDBOX_OAUTH_URL);
   } else {
     DCHECK(type == UrlType::kAPI);
-    return _environment == mojom::Environment::PRODUCTION
+    return GetEnvironment() == mojom::Environment::PRODUCTION
                ? BUILDFLAG(GEMINI_PRODUCTION_API_URL)
                : BUILDFLAG(GEMINI_SANDBOX_API_URL);
   }
@@ -59,19 +63,19 @@ std::string GetLoginUrl(const std::string& state) {
 namespace gemini {
 
 std::string GetClientId() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(GEMINI_PRODUCTION_CLIENT_ID)
              : BUILDFLAG(GEMINI_SANDBOX_CLIENT_ID);
 }
 
 std::string GetClientSecret() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(GEMINI_PRODUCTION_CLIENT_SECRET)
              : BUILDFLAG(GEMINI_SANDBOX_CLIENT_SECRET);
 }
 
 std::string GetFeeAddress() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(GEMINI_PRODUCTION_FEE_ADDRESS)
              : BUILDFLAG(GEMINI_SANDBOX_FEE_ADDRESS);
 }

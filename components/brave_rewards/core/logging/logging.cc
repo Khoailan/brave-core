@@ -5,23 +5,16 @@
 
 #include "brave/components/brave_rewards/core/logging/logging.h"
 
+#include "brave/components/brave_rewards/core/ledger_impl.h"
+
 namespace brave_rewards::internal {
-
-mojom::LedgerClient* g_ledger_client = nullptr;  // NOT OWNED
-
-void set_ledger_client_for_logging(mojom::LedgerClient* ledger_client) {
-  g_ledger_client = ledger_client;
-}
 
 void Log(const char* file,
          const int line,
          const int verbose_level,
          const std::string& message) {
-  if (!g_ledger_client) {
-    return;
-  }
-
-  g_ledger_client->Log(file, line, verbose_level, message);
+  LedgerImpl::GetForCurrentSequence().client()->Log(file, line, verbose_level,
+                                                    message);
 }
 
 }  // namespace brave_rewards::internal

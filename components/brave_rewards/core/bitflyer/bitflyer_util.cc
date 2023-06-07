@@ -12,9 +12,15 @@
 #include "brave/components/brave_rewards/core/ledger_impl.h"
 
 namespace brave_rewards::internal {
+
 namespace {
+
+mojom::Environment GetEnvironment() {
+  return LedgerImpl::GetForCurrentSequence().environment();
+}
+
 std::string GetUrl() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(BITFLYER_PRODUCTION_URL)
              : BUILDFLAG(BITFLYER_SANDBOX_URL);
 }
@@ -49,19 +55,19 @@ std::string GetLoginUrl(const std::string& state,
 namespace bitflyer {
 
 std::string GetClientId() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(BITFLYER_PRODUCTION_CLIENT_ID)
              : BUILDFLAG(BITFLYER_SANDBOX_CLIENT_ID);
 }
 
 std::string GetClientSecret() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(BITFLYER_PRODUCTION_CLIENT_SECRET)
              : BUILDFLAG(BITFLYER_SANDBOX_CLIENT_SECRET);
 }
 
 std::string GetFeeAddress() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(BITFLYER_PRODUCTION_FEE_ADDRESS)
              : BUILDFLAG(BITFLYER_SANDBOX_FEE_ADDRESS);
 }

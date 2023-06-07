@@ -64,8 +64,6 @@
 namespace brave_rewards::internal {
 namespace database {
 
-uint32_t DatabaseMigration::test_target_version_ = 0;
-
 DatabaseMigration::DatabaseMigration(LedgerImpl& ledger) : ledger_(ledger) {}
 
 DatabaseMigration::~DatabaseMigration() = default;
@@ -77,9 +75,14 @@ void DatabaseMigration::Start(uint32_t table_version,
 
   auto transaction = mojom::DBTransaction::New();
   int migrated_version = table_version;
-  const uint32_t target_version = is_testing && test_target_version_
-                                      ? test_target_version_
-                                      : database::GetCurrentVersion();
+  uint32_t target_version = database::GetCurrentVersion();
+  if (ledger_->is_testing()) {
+    uint32_t version =
+        ledger_->database_migration_target_version_for_testing();  // IN-TEST
+    if (version) {
+      target_version = version;
+    }
+  }
 
   if (target_version == table_version) {
     callback(mojom::Result::LEDGER_OK);
@@ -181,10 +184,6 @@ void DatabaseMigration::Start(uint32_t table_version,
 
         callback(mojom::Result::LEDGER_ERROR);
       });
-}
-
-void DatabaseMigration::SetTargetVersionForTesting(uint32_t version) {
-  test_target_version_ = version;
 }
 
 void DatabaseMigration::GenerateCommand(mojom::DBTransaction* transaction,

@@ -16,6 +16,7 @@
 #include "brave/components/brave_rewards/core/ledger_client_mock.h"
 #include "brave/components/brave_rewards/core/ledger_impl_mock.h"
 #include "brave/components/brave_rewards/core/state/state_keys.h"
+#include "brave/components/brave_rewards/core/test/bat_ledger_test.h"
 #include "brave/components/brave_rewards/core/test/test_ledger_client.h"
 #include "brave/components/brave_rewards/core/uphold/uphold.h"
 #include "brave/components/brave_rewards/core/uphold/uphold_util.h"
@@ -25,58 +26,59 @@
 
 using ::testing::_;
 using ::testing::Combine;
-using ::testing::TestWithParam;
 using ::testing::Values;
+using ::testing::WithParamInterface;
 
 namespace brave_rewards::internal::uphold {
 
 class UpholdUtilTest
-    : public TestWithParam<
+    : public BATLedgerTest,
+      public WithParamInterface<
           std::tuple<mojom::Environment, mojom::WalletStatus>> {};
 
 TEST_F(UpholdUtilTest, GetClientId) {
-  _environment = mojom::Environment::PRODUCTION;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   EXPECT_EQ(GetClientId(), BUILDFLAG(UPHOLD_PRODUCTION_CLIENT_ID));
 
-  _environment = mojom::Environment::STAGING;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   EXPECT_EQ(GetClientId(), BUILDFLAG(UPHOLD_SANDBOX_CLIENT_ID));
 
-  _environment = mojom::Environment::DEVELOPMENT;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   EXPECT_EQ(GetClientId(), BUILDFLAG(UPHOLD_SANDBOX_CLIENT_ID));
 }
 
 TEST_F(UpholdUtilTest, GetClientSecret) {
-  _environment = mojom::Environment::PRODUCTION;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   EXPECT_EQ(GetClientSecret(), BUILDFLAG(UPHOLD_PRODUCTION_CLIENT_SECRET));
 
-  _environment = mojom::Environment::STAGING;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   EXPECT_EQ(GetClientSecret(), BUILDFLAG(UPHOLD_SANDBOX_CLIENT_SECRET));
 
-  _environment = mojom::Environment::DEVELOPMENT;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   EXPECT_EQ(GetClientSecret(), BUILDFLAG(UPHOLD_SANDBOX_CLIENT_SECRET));
 }
 
 TEST_F(UpholdUtilTest, GetFeeAddress) {
-  _environment = mojom::Environment::PRODUCTION;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   EXPECT_EQ(GetFeeAddress(), BUILDFLAG(UPHOLD_PRODUCTION_FEE_ADDRESS));
 
-  _environment = mojom::Environment::STAGING;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   EXPECT_EQ(GetFeeAddress(), BUILDFLAG(UPHOLD_SANDBOX_FEE_ADDRESS));
 
-  _environment = mojom::Environment::DEVELOPMENT;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   EXPECT_EQ(GetFeeAddress(), BUILDFLAG(UPHOLD_SANDBOX_FEE_ADDRESS));
 }
 
 TEST_F(UpholdUtilTest, GetServerUrl) {
-  _environment = mojom::Environment::PRODUCTION;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   EXPECT_EQ(endpoint::uphold::GetServerUrl("/test"),
             base::StrCat({BUILDFLAG(UPHOLD_PRODUCTION_API_URL), "/test"}));
 
-  _environment = mojom::Environment::STAGING;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   EXPECT_EQ(endpoint::uphold::GetServerUrl("/test"),
             base::StrCat({BUILDFLAG(UPHOLD_SANDBOX_API_URL), "/test"}));
 
-  _environment = mojom::Environment::DEVELOPMENT;
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   EXPECT_EQ(endpoint::uphold::GetServerUrl("/test"),
             base::StrCat({BUILDFLAG(UPHOLD_SANDBOX_API_URL), "/test"}));
 }
@@ -121,13 +123,14 @@ TEST_F(UpholdUtilTest, GetWallet) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(UpholdUtilTest, GenerateRandomHexString) {
-  is_testing = true;
+TEST_F(UpholdUtilTest, GenerateRandomHexStringForTesting) {
+  GetLedgerImpl()->SetTesting();
   auto result = util::GenerateRandomHexString();
   EXPECT_EQ(result, "123456789");
+}
 
-  is_testing = false;
-  result = util::GenerateRandomHexString();
+TEST_F(UpholdUtilTest, GenerateRandomHexString) {
+  auto result = util::GenerateRandomHexString();
   EXPECT_EQ(result.length(), 64u);
 }
 
@@ -149,7 +152,7 @@ INSTANTIATE_TEST_SUITE_P(GenerateLinks,
 TEST_P(UpholdUtilTest, Paths) {
   const auto [environment, wallet_status] = GetParam();
 
-  _environment = environment;
+  GetLedgerImpl()->SetEnvironment(environment);
   auto wallet = mojom::ExternalWallet::New();
   wallet->status = wallet_status;
   wallet->address = "address";

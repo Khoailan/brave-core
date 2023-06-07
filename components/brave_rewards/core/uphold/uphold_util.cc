@@ -12,16 +12,21 @@
 
 namespace brave_rewards::internal {
 namespace {
+
+mojom::Environment GetEnvironment() {
+  return LedgerImpl::GetForCurrentSequence().environment();
+}
+
 enum class UrlType { kOAuth, kAPI };
 
 std::string GetUrl(UrlType type) {
   if (type == UrlType::kOAuth) {
-    return _environment == mojom::Environment::PRODUCTION
+    return GetEnvironment() == mojom::Environment::PRODUCTION
                ? BUILDFLAG(UPHOLD_PRODUCTION_OAUTH_URL)
                : BUILDFLAG(UPHOLD_SANDBOX_OAUTH_URL);
   } else {
     DCHECK(type == UrlType::kAPI);
-    return _environment == mojom::Environment::PRODUCTION
+    return GetEnvironment() == mojom::Environment::PRODUCTION
                ? BUILDFLAG(UPHOLD_PRODUCTION_API_URL)
                : BUILDFLAG(UPHOLD_SANDBOX_API_URL);
   }
@@ -57,19 +62,19 @@ std::string GetLoginUrl(const std::string& state) {
 namespace uphold {
 
 std::string GetClientId() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(UPHOLD_PRODUCTION_CLIENT_ID)
              : BUILDFLAG(UPHOLD_SANDBOX_CLIENT_ID);
 }
 
 std::string GetClientSecret() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(UPHOLD_PRODUCTION_CLIENT_SECRET)
              : BUILDFLAG(UPHOLD_SANDBOX_CLIENT_SECRET);
 }
 
 std::string GetFeeAddress() {
-  return _environment == mojom::Environment::PRODUCTION
+  return GetEnvironment() == mojom::Environment::PRODUCTION
              ? BUILDFLAG(UPHOLD_PRODUCTION_FEE_ADDRESS)
              : BUILDFLAG(UPHOLD_SANDBOX_FEE_ADDRESS);
 }

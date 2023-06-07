@@ -5,8 +5,7 @@
 
 #include "brave/components/brave_rewards/core/endpoint/rewards/rewards_util.h"
 #include "brave/components/brave_rewards/core/global_constants.h"
-#include "brave/components/brave_rewards/core/ledger_impl.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "brave/components/brave_rewards/core/test/bat_ledger_test.h"
 
 // npm run test -- brave_unit_tests --filter=RewardsUtilTest.*
 
@@ -14,22 +13,22 @@ namespace brave_rewards::internal {
 namespace endpoint {
 namespace rewards {
 
-class RewardsUtilTest : public testing::Test {};
+class RewardsUtilTest : public BATLedgerTest {};
 
-TEST(RewardsUtilTest, GetServerUrlDevelopment) {
-  _environment = mojom::Environment::DEVELOPMENT;
+TEST_F(RewardsUtilTest, GetServerUrlDevelopment) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url, "https://rewards-dev.brave.software/test");
 }
 
-TEST(RewardsUtilTest, GetServerUrlStaging) {
-  _environment = mojom::Environment::STAGING;
+TEST_F(RewardsUtilTest, GetServerUrlStaging) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url, "https://rewards-stg.bravesoftware.com/test");
 }
 
-TEST(RewardsUtilTest, GetServerUrlProduction) {
-  _environment = mojom::Environment::PRODUCTION;
+TEST_F(RewardsUtilTest, GetServerUrlProduction) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url, "https://rewards.brave.com/test");
 }

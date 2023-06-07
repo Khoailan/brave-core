@@ -39,20 +39,14 @@ const char kACSKUProduction[] =
     "B0OfoiPn0NPVfI602J";  // NOLINT
 
 std::string GetACSKU() {
-  if (_environment == mojom::Environment::PRODUCTION) {
-    return kACSKUProduction;
+  switch (LedgerImpl::GetForCurrentSequence().environment()) {
+    case mojom::Environment::PRODUCTION:
+      return kACSKUProduction;
+    case mojom::Environment::STAGING:
+      return kACSKUStaging;
+    case mojom::Environment::DEVELOPMENT:
+      return kACSKUDev;
   }
-
-  if (_environment == mojom::Environment::STAGING) {
-    return kACSKUStaging;
-  }
-
-  if (_environment == mojom::Environment::DEVELOPMENT) {
-    return kACSKUDev;
-  }
-
-  NOTREACHED();
-  return kACSKUDev;
 }
 
 void GetCredentialTrigger(mojom::SKUOrderPtr order,

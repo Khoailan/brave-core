@@ -68,7 +68,6 @@ mojom::ExternalWalletPtr ExternalWalletPtrFromJSON(std::string wallet_string,
                                                    std::string wallet_type) {
   absl::optional<base::Value> value = base::JSONReader::Read(wallet_string);
   if (!value || !value->is_dict()) {
-    BLOG(0, "Parsing of " + wallet_type + " wallet failed");
     return nullptr;
   }
 
@@ -151,7 +150,11 @@ mojom::ExternalWalletPtr GetWallet(LedgerImpl& ledger,
     return nullptr;
   }
 
-  return ExternalWalletPtrFromJSON(*json, wallet_type);
+  auto wallet = ExternalWalletPtrFromJSON(*json, wallet_type);
+  if (!wallet) {
+    BLOG(0, "Parsing of " << wallet_type << " wallet failed");
+  }
+  return wallet;
 }
 
 mojom::ExternalWalletPtr GetWalletIf(

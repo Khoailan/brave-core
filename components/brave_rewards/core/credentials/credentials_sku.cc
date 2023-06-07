@@ -25,34 +25,31 @@ namespace brave_rewards::internal {
 
 namespace {
 
+std::vector<std::string> GetKeys() {
+  switch (LedgerImpl::GetForCurrentSequence().environment()) {
+    case mojom::Environment::PRODUCTION:
+      return {
+          "yr4w9Y0XZQISBOToATNEl5ADspDUgm7cBSOhfYgPWx4=",  // AC
+          "PGLvfpIn8QXuQJEtv2ViQSWw2PppkhexKr1mlvwCpnM="   // User funds
+      };
+    case mojom::Environment::STAGING:
+      return {
+          "mMMWZrWPlO5b9IB8vF5kUJW4f7ULH1wuEop3NOYqNW0=",  // AC
+          "CMezK92X5wmYHVYpr22QhNsTTq6trA/N9Alw+4cKyUY="   // User funds
+      };
+    case mojom::Environment::DEVELOPMENT:
+      return {
+          "RhfxGp4pT0Kqe2zx4+q+L6lwC3G9v3fIj1L+PbINNzw=",  // AC
+          "nsSoWgGMJpIiCGVdYrne03ldQ4zqZOMERVD5eSPhhxc="   // User funds
+      };
+  }
+}
+
 bool IsPublicKeyValid(const std::string& public_key) {
   if (public_key.empty()) {
     return false;
   }
-
-  std::vector<std::string> keys;
-  if (_environment == mojom::Environment::PRODUCTION) {
-    keys = {
-        "yr4w9Y0XZQISBOToATNEl5ADspDUgm7cBSOhfYgPWx4=",  // AC
-        "PGLvfpIn8QXuQJEtv2ViQSWw2PppkhexKr1mlvwCpnM="   // User funds
-    };
-  }
-
-  if (_environment == mojom::Environment::STAGING) {
-    keys = {
-        "mMMWZrWPlO5b9IB8vF5kUJW4f7ULH1wuEop3NOYqNW0=",  // AC
-        "CMezK92X5wmYHVYpr22QhNsTTq6trA/N9Alw+4cKyUY="   // User funds
-    };
-  }
-
-  if (_environment == mojom::Environment::DEVELOPMENT) {
-    keys = {
-        "RhfxGp4pT0Kqe2zx4+q+L6lwC3G9v3fIj1L+PbINNzw=",  // AC
-        "nsSoWgGMJpIiCGVdYrne03ldQ4zqZOMERVD5eSPhhxc="   // User funds
-    };
-  }
-
-  return base::Contains(keys, public_key);
+  return base::Contains(GetKeys(), public_key);
 }
 
 std::string ConvertItemTypeToString(const std::string& type) {
@@ -332,7 +329,7 @@ void CredentialsSKU::Unblind(ResultCallback callback,
   }
 
   std::vector<std::string> unblinded_encoded_creds;
-  if (is_testing) {
+  if (ledger_->is_testing()) {
     unblinded_encoded_creds = UnBlindCredsMock(*creds);
   } else {
     auto result = UnBlindCreds(*creds);

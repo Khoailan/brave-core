@@ -17,6 +17,7 @@
 #include "brave/components/brave_rewards/core/ledger_impl_mock.h"
 #include "brave/components/brave_rewards/core/promotion/promotion.h"
 #include "brave/components/brave_rewards/core/state/state_keys.h"
+#include "brave/components/brave_rewards/core/test/bat_ledger_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // npm run test -- brave_unit_tests --filter=PromotionTest.*
@@ -28,7 +29,7 @@ using ::testing::Pointee;
 
 namespace brave_rewards::internal::promotion {
 
-class PromotionTest : public testing::Test {
+class PromotionTest : public BATLedgerTest {
  protected:
   void SetUp() override {
     ON_CALL(*mock_ledger_impl_.mock_client(),
@@ -122,14 +123,13 @@ TEST_F(PromotionTest, LegacyPromotionIsNotOverwritten) {
   EXPECT_CALL(callback, Run).Times(2);
 
   // to avoid fulfilling the fetch request from database in Promotion::Fetch()
-  is_testing = true;
+  GetLedgerImpl()->SetTesting();
   promotion_.Fetch(callback.Get());
   task_environment_.RunUntilIdle();
 
   inserted = true;
   promotion_.Fetch(callback.Get());
   task_environment_.RunUntilIdle();
-  is_testing = false;
 }
 
 }  // namespace brave_rewards::internal::promotion

@@ -70,7 +70,7 @@ void StateMigrationV10::Migrate(LegacyResultCallback callback) {
       auto wallet_info_endpoint_callback = std::bind(
           &StateMigrationV10::OnGetWallet, this, _1, _2, _3, callback);
 
-      if (is_testing) {
+      if (ledger_->is_testing()) {
         return wallet_info_endpoint_callback(mojom::Result::LEDGER_ERROR,
                                              std::string{}, false);
       } else {

@@ -29,8 +29,9 @@ namespace uphold {
 
 ConnectUpholdWallet::ConnectUpholdWallet(LedgerImpl& ledger)
     : ConnectExternalWallet(ledger) {
-  eligibility_checker_.Start(FROM_HERE, base::Minutes(is_testing ? 3 : 15),
-                             this, &ConnectUpholdWallet::CheckEligibility);
+  eligibility_checker_.Start(FROM_HERE,
+                             base::Minutes(ledger.is_testing() ? 3 : 15), this,
+                             &ConnectUpholdWallet::CheckEligibility);
 }
 
 ConnectUpholdWallet::~ConnectUpholdWallet() = default;

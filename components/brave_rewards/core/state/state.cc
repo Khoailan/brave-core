@@ -269,8 +269,9 @@ void State::SetReconcileStamp(const int reconcile_interval) {
   ledger_->SetState(kNextReconcileStamp, reconcile_stamp);
   ledger_->client()->ReconcileStampReset();
 }
+
 void State::ResetReconcileStamp() {
-  SetReconcileStamp(reconcile_interval);
+  SetReconcileStamp(ledger_->reconcile_interval());
 }
 
 uint64_t State::GetCreationStamp() {

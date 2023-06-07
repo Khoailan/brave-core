@@ -6,12 +6,12 @@
 #ifndef BRAVE_COMPONENTS_SERVICES_BAT_LEDGER_LEDGER_FACTORY_IMPL_H_
 #define BRAVE_COMPONENTS_SERVICES_BAT_LEDGER_LEDGER_FACTORY_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "brave/components/services/bat_ledger/public/interfaces/ledger_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 
 namespace brave_rewards::internal {
 
@@ -31,8 +31,10 @@ class LedgerFactoryImpl : public mojom::LedgerFactory {
       CreateLedgerCallback callback) override;
 
  private:
+  void OnLedgerCreated(CreateLedgerCallback callback);
+
   mojo::Receiver<mojom::LedgerFactory> receiver_;
-  mojo::SelfOwnedAssociatedReceiverRef<mojom::Ledger> ledger_;
+  base::WeakPtrFactory<LedgerFactoryImpl> weak_factory_{this};
 };
 
 }  // namespace brave_rewards::internal

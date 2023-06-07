@@ -7,8 +7,7 @@
 #include "base/strings/strcat.h"
 #include "brave/components/brave_rewards/core/buildflags.h"
 #include "brave/components/brave_rewards/core/global_constants.h"
-#include "brave/components/brave_rewards/core/ledger_impl.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "brave/components/brave_rewards/core/test/bat_ledger_test.h"
 
 // npm run test -- brave_unit_tests --filter=PromotionsUtilTest.*
 
@@ -16,24 +15,24 @@ namespace brave_rewards::internal {
 namespace endpoint {
 namespace promotion {
 
-class PromotionsUtilTest : public testing::Test {};
+class PromotionsUtilTest : public BATLedgerTest {};
 
-TEST(PromotionsUtilTest, GetServerUrlDevelopment) {
-  _environment = mojom::Environment::DEVELOPMENT;
+TEST_F(PromotionsUtilTest, GetServerUrlDevelopment) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::DEVELOPMENT);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url,
             base::StrCat({BUILDFLAG(REWARDS_GRANT_DEV_ENDPOINT), "/test"}));
 }
 
-TEST(PromotionsUtilTest, GetServerUrlStaging) {
-  _environment = mojom::Environment::STAGING;
+TEST_F(PromotionsUtilTest, GetServerUrlStaging) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::STAGING);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url,
             base::StrCat({BUILDFLAG(REWARDS_GRANT_STAGING_ENDPOINT), "/test"}));
 }
 
-TEST(PromotionsUtilTest, GetServerUrlProduction) {
-  _environment = mojom::Environment::PRODUCTION;
+TEST_F(PromotionsUtilTest, GetServerUrlProduction) {
+  GetLedgerImpl()->SetEnvironment(mojom::Environment::PRODUCTION);
   const std::string url = GetServerUrl("/test");
   ASSERT_EQ(url,
             base::StrCat({BUILDFLAG(REWARDS_GRANT_PROD_ENDPOINT), "/test"}));
