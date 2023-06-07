@@ -22,8 +22,10 @@
 
 using views::MenuItemView;
 
-BraveAppMenu::BraveAppMenu(Browser* browser, int run_types)
-    : AppMenu(browser, run_types),
+BraveAppMenu::BraveAppMenu(Browser* browser,
+                           ui::MenuModel* model,
+                           int run_types)
+    : AppMenu(browser, model, run_types),
       menu_metrics_(g_brave_browser_process->menu_metrics()) {
   DCHECK(menu_metrics_);
 }
