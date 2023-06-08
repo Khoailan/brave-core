@@ -181,7 +181,8 @@ TestingBraveBrowserProcess::brave_vpn_os_connection_api() {
 }
 #endif
 
-misc_metrics::MenuMetrics* TestingBraveBrowserProcess::menu_metrics() {
+misc_metrics::ProcessMiscMetrics*
+TestingBraveBrowserProcess::process_misc_metrics() {
   NOTREACHED();
   return nullptr;
 }

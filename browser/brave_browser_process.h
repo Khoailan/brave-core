@@ -64,7 +64,7 @@ class LocalhostPermissionComponent;
 }  // namespace localhost_permission
 
 namespace misc_metrics {
-class MenuMetrics;
+class ProcessMiscMetrics;
 }  // namespace misc_metrics
 
 namespace request_otr {
@@ -147,7 +147,7 @@ class BraveBrowserProcess {
 #endif
   virtual brave_ads::ResourceComponent* resource_component() = 0;
   virtual brave::BraveFarblingService* brave_farbling_service() = 0;
-  virtual misc_metrics::MenuMetrics* menu_metrics() = 0;
+  virtual misc_metrics::ProcessMiscMetrics* process_misc_metrics() = 0;
 };
 
 extern BraveBrowserProcess* g_brave_browser_process;
