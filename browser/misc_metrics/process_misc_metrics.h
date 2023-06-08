@@ -8,12 +8,17 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+
 class PrefRegistrySimple;
 class PrefService;
 
 namespace misc_metrics {
 
 class MenuMetrics;
+#if !BUILDFLAG(IS_ANDROID)
+class VerticalTabMetrics;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ProcessMiscMetrics {
  public:
@@ -26,9 +31,15 @@ class ProcessMiscMetrics {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   MenuMetrics* menu_metrics();
+#if !BUILDFLAG(IS_ANDROID)
+  VerticalTabMetrics* vertical_tab_metrics();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   std::unique_ptr<MenuMetrics> menu_metrics_;
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<VerticalTabMetrics> vertical_tab_metrics_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace misc_metrics
