@@ -558,6 +558,9 @@ source_set("ui") {
       "//brave/components/brave_vpn/browser",
       "//brave/components/brave_vpn/common",
     ]
+    if (is_win) {
+      deps += [ "//brave/components/brave_vpn/browser/connection/wireguard/win/brave_vpn_wireguard_service/common" ]
+    }
   }
 
   if (is_linux) {
