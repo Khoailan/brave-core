@@ -32,7 +32,6 @@
 #include "brave/components/brave_rewards/common/mojom/bat_ledger.mojom.h"
 #include "brave/components/brave_rewards/common/rewards_flags.h"
 #include "brave/components/greaselion/browser/buildflags/buildflags.h"
-#include "brave/components/services/bat_ledger/public/interfaces/ledger_factory.mojom.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -336,7 +335,7 @@ class RewardsServiceImpl : public RewardsService,
 
   void CheckPreferences();
 
-  void StartLedgerProcessIfNecessary();
+  void StartLedgerIfNecessary();
 
   void OnStopLedger(StopLedgerCallback callback, const mojom::Result result);
 
@@ -580,7 +579,6 @@ class RewardsServiceImpl : public RewardsService,
 #endif
   mojo::AssociatedReceiver<mojom::LedgerClient> receiver_;
   mojo::AssociatedRemote<mojom::Ledger> ledger_;
-  mojo::Remote<mojom::LedgerFactory> ledger_factory_;
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> json_sanitizer_task_runner_;
 

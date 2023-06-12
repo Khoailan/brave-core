@@ -31,7 +31,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "brave/browser/ui/webui/brave_rewards_source.h"
@@ -52,6 +51,7 @@
 #include "brave/components/brave_rewards/core/global_constants.h"
 #include "brave/components/brave_rewards/core/ledger_database.h"
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
+#include "brave/components/services/bat_ledger/public/interfaces/ledger_factory.mojom.h"
 #include "brave/grit/brave_generated_resources.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -339,10 +339,16 @@ RewardsServiceImpl::~RewardsServiceImpl() {
 }
 
 void RewardsServiceImpl::ConnectionClosed() {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  if (!ready_->is_signaled()) {
+    return;
+  }
+
+  BLOG(0, "Rewards engine process stopped, restarting...");
+  Reset();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&RewardsServiceImpl::StartLedgerProcessIfNecessary,
-                     AsWeakPtr()),
+      base::BindOnce(&RewardsServiceImpl::StartLedgerIfNecessary, AsWeakPtr()),
       base::Seconds(1));
 }
 
@@ -383,7 +389,7 @@ void RewardsServiceImpl::InitPrefChangeRegistrar() {
 void RewardsServiceImpl::OnPreferenceChanged(const std::string& key) {
   if (key == prefs::kAutoContributeEnabled) {
     if (profile_->GetPrefs()->GetBoolean(prefs::kAutoContributeEnabled)) {
-      StartLedgerProcessIfNecessary();
+      StartLedgerIfNecessary();
     }
     // Must check for connected external wallet before recording
     // AC state.
@@ -428,11 +434,11 @@ void RewardsServiceImpl::CheckPreferences() {
   if (prefs->GetUserPrefValue(prefs::kEnabled)) {
     // If the "enabled" pref is set, then start the background Rewards
     // utility process.
-    StartLedgerProcessIfNecessary();
+    StartLedgerIfNecessary();
   }
 }
 
-void RewardsServiceImpl::StartLedgerProcessIfNecessary() {
+void RewardsServiceImpl::StartLedgerIfNecessary() {
   if (Connected()) {
     BLOG(1, "Ledger process is already running");
     return;
@@ -443,21 +449,26 @@ void RewardsServiceImpl::StartLedgerProcessIfNecessary() {
 
   BLOG(1, "Starting ledger process");
 
-  if (!ledger_factory_.is_bound()) {
-    content::ServiceProcessHost::Launch(
-        ledger_factory_.BindNewPipeAndPassReceiver(),
+  static mojo::Remote<mojom::LedgerFactory> ledger_factory;
+  if (!ledger_factory.is_bound()) {
+    ledger_factory = content::ServiceProcessHost::Launch<mojom::LedgerFactory>(
         content::ServiceProcessHost::Options()
             .WithDisplayName(IDS_UTILITY_PROCESS_LEDGER_NAME)
             .Pass());
-
-    ledger_factory_.set_disconnect_handler(
-        base::BindOnce(&RewardsServiceImpl::ConnectionClosed, AsWeakPtr()));
+    ledger_factory.reset_on_disconnect();
   }
 
-  ledger_factory_->CreateLedger(
+  BLOG(1, "Creating rewards engine instance");
+
+  ledger_factory->CreateLedger(
       ledger_.BindNewEndpointAndPassReceiver(),
       receiver_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&RewardsServiceImpl::OnLedgerCreated, AsWeakPtr()));
+
+  ledger_.set_disconnect_handler(
+      base::BindOnce(&RewardsServiceImpl::ConnectionClosed, AsWeakPtr()));
+
+  receiver_.reset_on_disconnect();
 }
 
 void RewardsServiceImpl::OnLedgerCreated() {
@@ -552,7 +563,7 @@ void RewardsServiceImpl::CreateRewardsWallet(
 
   ready_->Post(FROM_HERE, base::BindOnce(on_start, AsWeakPtr(), country,
                                          std::move(callback)));
-  StartLedgerProcessIfNecessary();
+  StartLedgerIfNecessary();
 }
 
 void RewardsServiceImpl::GetUserType(
@@ -1416,7 +1427,6 @@ void RewardsServiceImpl::Reset() {
   current_media_fetchers_.clear();
   ledger_.reset();
   receiver_.reset();
-  ledger_factory_.reset();
   ready_ = std::make_unique<base::OneShotEvent>();
   ledger_database_.Reset();
   BLOG(1, "Successfully reset rewards service");
@@ -2109,7 +2119,7 @@ bool RewardsServiceImpl::Connected() const {
 
 void RewardsServiceImpl::StartProcessForTesting(base::OnceClosure callback) {
   ready_->Post(FROM_HERE, std::move(callback));
-  StartLedgerProcessIfNecessary();
+  StartLedgerIfNecessary();
 }
 
 void RewardsServiceImpl::SetLedgerEnvForTesting() {

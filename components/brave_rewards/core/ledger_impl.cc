@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "brave/components/brave_rewards/core/common/legacy_callback_helpers.h"
 #include "brave/components/brave_rewards/core/common/security_util.h"
@@ -49,9 +48,10 @@ LedgerImpl::LedgerImpl(
       bitflyer_(*this),
       gemini_(*this),
       uphold_(*this) {
-  DCHECK(base::ThreadPoolInstance::Get());
-  CHECK(!g_ledger_slot);
+  CHECK(!g_ledger_slot) << "LedgerImpl has already been created for the "
+                        << "current sequence";
   g_ledger_slot.emplace(this);
+  ledger_client_.reset_on_disconnect();
 }
 
 LedgerImpl::~LedgerImpl() {
