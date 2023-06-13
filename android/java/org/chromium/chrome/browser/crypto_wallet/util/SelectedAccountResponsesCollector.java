@@ -50,9 +50,10 @@ public class SelectedAccountResponsesCollector {
 
             accountsPermissionsContexts.add(accountContext);
             if (CoinType.FIL == coin) {
-                mJsonRpcService.getNetwork(CoinType.FIL, origin, networkInfo -> {
-                    mKeyringService.getFilecoinSelectedAccount(networkInfo.chainId, accountContext);
-                });
+                mBraveWalletService.getNetworkForSelectedAccountOnActiveOrigin(
+                        CoinType.FIL, chainId -> {
+                            mKeyringService.getFilecoinSelectedAccount(chainId, accountContext);
+                        });
             } else {
                 mKeyringService.getSelectedAccount(coin, accountContext);
             }

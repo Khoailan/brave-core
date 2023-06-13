@@ -154,8 +154,8 @@ public class KeyringModel implements KeyringServiceObserver {
     void update() {
         if (mBraveWalletService != null) {
             mBraveWalletService.getSelectedCoin(coinType -> {
-                mJsonRpcService.getNetwork(coinType, mOrigin,
-                        networkInfo -> { update(coinType, networkInfo.chainId); });
+                mBraveWalletService.getNetworkForSelectedAccountOnActiveOrigin(
+                        coinType, chainId -> { update(coinType, chainId); });
             });
         }
     }
@@ -239,13 +239,13 @@ public class KeyringModel implements KeyringServiceObserver {
     }
 
     public void getKeyringInfo(Callback callback) {
-        mJsonRpcService.getNetwork(mSharedData.getCoinType(), mOrigin, networkInfo -> {
-            @KeyringId.EnumType
-            int keyringId =
-                    getSelectedCoinKeyringId(mSharedData.getCoinType(), networkInfo.chainId);
-            mKeyringService.getKeyringInfo(
-                    keyringId, keyringInfo -> { callback.onKeyringInfoReady(keyringInfo); });
-        });
+        mBraveWalletService.getNetworkForSelectedAccountOnActiveOrigin(
+                mSharedData.getCoinType(), chainId -> {
+                    @KeyringId.EnumType
+                    int keyringId = getSelectedCoinKeyringId(mSharedData.getCoinType(), chainId);
+                    mKeyringService.getKeyringInfo(keyringId,
+                            keyringInfo -> { callback.onKeyringInfoReady(keyringInfo); });
+                });
     }
 
     public void resetService(Context context, KeyringService keyringService,

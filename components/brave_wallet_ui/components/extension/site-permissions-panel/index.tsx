@@ -12,12 +12,14 @@ import {
 // Actions
 import { PanelActions } from '../../../panel/actions'
 
+// Queries
+import { useSelectedAccountQuery } from '../../../common/slices/api.slice.extra'
+
 // Types
 import { WalletAccountType, WalletState } from '../../../constants/types'
 
 // Utils
 import { getLocale } from '../../../../common/locale'
-import { useSelectedCoinQuery } from '../../../common/slices/api.slice'
 
 // Components
 import {
@@ -48,7 +50,8 @@ export const SitePermissions = () => {
   } = useSelector(({ wallet }: { wallet: WalletState }) => wallet)
 
   // api
-  const { selectedCoin } = useSelectedCoinQuery()
+  const { data: selectedAccount } = useSelectedAccountQuery()
+  const selectedCoin = selectedAccount?.accountId.coin
 
   // methods
   const onAddAccount = React.useCallback(() => {

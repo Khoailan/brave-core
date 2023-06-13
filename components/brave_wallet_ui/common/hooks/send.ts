@@ -28,6 +28,7 @@ import Amount from '../../utils/amount'
 import { useLib } from './useLib'
 import { useAssets } from './assets'
 import { useGetSelectedChainQuery, walletApi } from '../slices/api.slice'
+import { useSelectedAccountQuery } from '../slices/api.slice.extra'
 
 // constants
 import {
@@ -42,12 +43,12 @@ export default function useSend (isSendTab?: boolean) {
   // redux
   const dispatch = useDispatch()
   const {
-    selectedAccount,
     fullTokenList,
   } = useSelector((state: { wallet: WalletState }) => state.wallet)
 
   // queries
   const { data: selectedNetwork } = useGetSelectedChainQuery()
+  const { data: selectedAccount } = useSelectedAccountQuery()
 
   // custom hooks
   const {

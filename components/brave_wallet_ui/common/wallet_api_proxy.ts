@@ -35,9 +35,7 @@ export class WalletApiProxy {
   addJsonRpcServiceObserver (store: Store) {
     const jsonRpcServiceObserverReceiver = new BraveWallet.JsonRpcServiceObserverReceiver({
       chainChangedEvent: function (chainId, coin, origin) {
-        store.dispatch(
-          WalletActions.chainChangedEvent({
-            chainId, coin, origin: origin || undefined}))
+        store.dispatch(walletApi.endpoints.invalidateSelectedChain.initiate())
       },
       onAddEthereumChainRequestCompleted: function (chainId, error) {
         // TODO: Handle this event.
@@ -80,8 +78,11 @@ export class WalletApiProxy {
       autoLockMinutesChanged: function () {
         store.dispatch(WalletActions.autoLockMinutesChanged())
       },
-      selectedAccountChanged: function (coin: BraveWallet.CoinType) {
-        store.dispatch(WalletActions.selectedAccountChanged({ coin }))
+      selectedWalletAccountChanged: function (account: BraveWallet.AccountInfo) {
+        store.dispatch(walletApi.endpoints.invalidateSelectedAccount.initiate())
+      },
+      selectedDappAccountChanged: function (coin: BraveWallet.CoinType, account: BraveWallet.AccountInfo | null) {
+        // TODO: Handle this event.
       }
     })
     this.keyringService.addObserver(keyringServiceObserverReceiver.$.bindNewPipeAndPassRemote())

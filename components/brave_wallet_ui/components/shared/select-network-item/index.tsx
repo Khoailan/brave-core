@@ -40,7 +40,6 @@ function SelectNetworkItem (props: Props) {
   // queries & mutations
   const [setNetwork] = useSetNetworkMutation()
 
-
   // methods
   const onSelectNetwork = React.useCallback(async () => {
     if (onSelectCustomNetwork) {

@@ -5,6 +5,8 @@
 
 import * as React from 'react'
 
+import { BraveWallet } from '../../../../../constants/types'
+
 // Selectors
 import { WalletSelectors } from '../../../../../common/selectors'
 import { useUnsafeWalletSelector } from '../../../../../common/hooks/use-safe-selector'
@@ -16,6 +18,7 @@ import CaratDownIcon from '../../assets/carat-down-icon.svg'
 // Hooks
 import { useOnClickOutside } from '../../../../../common/hooks/useOnClickOutside'
 import {
+  useGetSelectedAccountIdQuery,
   useGetSelectedChainQuery //
 } from '../../../../../common/slices/api.slice'
 
@@ -37,10 +40,10 @@ export const AccountSelector = (props: Props) => {
 
   // Selectors
   const accounts = useUnsafeWalletSelector(WalletSelectors.accounts)
-  const selectedAccount = useUnsafeWalletSelector(WalletSelectors.selectedAccount)
 
   // Queries
   const { data: selectedNetwork } = useGetSelectedChainQuery()
+  const { data: selectedAccountId } = useGetSelectedAccountIdQuery()
 
   // State
   const [showAccountSelector, setShowAccountSelector] = React.useState<boolean>(false)
@@ -53,22 +56,25 @@ export const AccountSelector = (props: Props) => {
     setShowAccountSelector(prev => !prev)
   }, [])
 
-  const handleOnSelectAccount = React.useCallback((address: string) => {
+  const handleOnSelectAccount = React.useCallback((account: BraveWallet.AccountInfo) => {
     setShowAccountSelector(false)
-    onSelectAddress(address)
+    onSelectAddress(account.address)
   }, [onSelectAddress])
 
   // Memos
   const accountsByNetwork = React.useMemo(() => {
-    if (!selectedNetwork || !selectedAccount) {
+    if (!selectedNetwork || !selectedAccountId) {
       return []
     }
     return accounts.filter(
       (account) =>
         account.accountId.coin === selectedNetwork.coin &&
-        account.accountId.keyringId === selectedAccount.accountId.keyringId
+        account.accountId.coin === selectedAccountId.coin &&
+        // TODO(apaymyshev): for bitcoin should allow sending to my account but
+        // from different keyring (i.e. segwit -> taproot)
+        account.accountId.keyringId === selectedAccountId.keyringId
     )
-  }, [accounts, selectedNetwork, selectedAccount])
+  }, [accounts, selectedNetwork, selectedAccountId])
 
   // Hooks
   useOnClickOutside(
@@ -88,10 +94,10 @@ export const AccountSelector = (props: Props) => {
         <DropDown ref={accountSelectorRef}>
           {accountsByNetwork.map((account) =>
             <AccountListItem
-              key={account.address}
+              key={account.accountId.uniqueKey}
+              account={account}
               onClick={handleOnSelectAccount}
-              address={account.address}
-              name={account.name}
+              isSelected={account.accountId.uniqueKey === selectedAccountId?.uniqueKey}
             />
           )}
         </DropDown>

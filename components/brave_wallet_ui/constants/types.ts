@@ -240,7 +240,6 @@ export interface WalletState {
   favoriteApps: BraveWallet.AppItem[]
   isWalletBackedUp: boolean
   hasIncorrectPassword: boolean
-  selectedAccount?: WalletAccountType
   accounts: WalletAccountType[]
   userVisibleTokensInfo: BraveWallet.BlockchainToken[]
   fullTokenList: BraveWallet.BlockchainToken[]
@@ -342,9 +341,9 @@ export interface WalletPanelState {
   ui: UIState
 }
 
-export interface WalletInfo extends BraveWallet.WalletInfo {
-  accountInfos: BraveWallet.AccountInfo[]
-  selectedAccount: string
+export interface WalletInitializedPayload {
+  walletInfo: BraveWallet.WalletInfo
+  allAccounts: BraveWallet.AllAccountsInfo
 }
 
 export type AmountValidationErrorType =

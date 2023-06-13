@@ -54,7 +54,6 @@ export const fullTokenList = ({ wallet }: State) => wallet.fullTokenList
 export const gasEstimates = ({ wallet }: State) => wallet.gasEstimates
 export const onRampCurrencies = ({ wallet }: State) => wallet.onRampCurrencies
 export const portfolioPriceHistory = ({ wallet }: State) => wallet.portfolioPriceHistory
-export const selectedAccount = ({ wallet }: State) => wallet.selectedAccount
 export const selectedAssetFilter = ({ wallet }: State) => wallet.selectedAssetFilter
 export const selectedGroupAssetsByItem = ({ wallet }: State) =>
   wallet.selectedGroupAssetsByItem

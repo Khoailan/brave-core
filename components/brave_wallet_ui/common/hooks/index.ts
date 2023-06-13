@@ -5,7 +5,6 @@
 
 import useAssets from './assets'
 import useSend from './send'
-import usePreset from './select-preset'
 import useTokenInfo from './token'
 import useExplorer from './explorer'
 import useAssetManagement from './assets-management'
@@ -23,7 +22,6 @@ export {
   useHasAccount,
   useIsMounted,
   useLib,
-  usePreset,
   usePrevNetwork,
   useSend,
   useTokenInfo,

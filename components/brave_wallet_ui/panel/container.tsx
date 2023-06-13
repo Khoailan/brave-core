@@ -45,7 +45,6 @@ import {
   AppsListType,
   BraveWallet,
   PanelTypes,
-  WalletAccountType,
 } from '../constants/types'
 
 import { AppsList } from '../options/apps-list-options'
@@ -64,7 +63,9 @@ import { PanelSelectors } from './selectors'
 import {
   useGetNetworkQuery,
   useGetSelectedChainQuery,
+  useSetSelectedAccountMutation,
 } from '../common/slices/api.slice'
+import { useSelectedAccountQuery } from '../common/slices/api.slice.extra'
 import { usePendingTransactions } from '../common/hooks/use-pending-transaction'
 
 // Allow BigInts to be stringified
@@ -86,7 +87,6 @@ function Container () {
   const activeOrigin = useUnsafeWalletSelector(WalletSelectors.activeOrigin)
   const defaultCurrencies = useUnsafeWalletSelector(WalletSelectors.defaultCurrencies)
   const favoriteApps = useUnsafeWalletSelector(WalletSelectors.favoriteApps)
-  const selectedAccount = useUnsafeWalletSelector(WalletSelectors.selectedAccount)
   const userVisibleTokensInfo = useUnsafeWalletSelector(WalletSelectors.userVisibleTokensInfo)
 
   // panel selectors (safe)
@@ -108,6 +108,8 @@ function Container () {
   const connectingAccounts = useUnsafePanelSelector(PanelSelectors.connectingAccounts)
 
   // queries
+  const [setSelectedAccount] = useSetSelectedAccountMutation()
+  const { data: selectedAccount } = useSelectedAccountQuery()
   const { data: selectedNetwork } = useGetSelectedChainQuery()
   const { data: switchChainRequestNetwork } = useGetNetworkQuery(
     switchChainRequest.chainId
@@ -169,8 +171,8 @@ function Container () {
     filterAppList(event, AppsList(), setFilteredAppsList)
   }
 
-  const onSelectAccount = (account: WalletAccountType) => {
-    dispatch(WalletActions.selectAccount(account.accountId))
+  const onSelectAccount = async (account: BraveWallet.AccountInfo) => {
+    await setSelectedAccount(account.accountId)
     dispatch(WalletPanelActions.navigateTo('main'))
   }
 
@@ -202,8 +204,8 @@ function Container () {
     dispatch(WalletPanelActions.switchEthereumChainProcessed({ approved: false, origin: switchChainRequest.originInfo.origin }))
   }
 
-  const onCancelConnectHardwareWallet = (accountAddress: string, coinType: BraveWallet.CoinType) => {
-    dispatch(WalletPanelActions.cancelConnectHardwareWallet({ accountAddress, coinType }))
+  const onCancelConnectHardwareWallet = (account: BraveWallet.AccountInfo) => {
+    dispatch(WalletPanelActions.cancelConnectHardwareWallet(account))
   }
 
   const onAddAccount = () => {
@@ -322,9 +324,7 @@ function Container () {
         <StyledExtensionWrapper>
           <ConnectHardwareWalletPanel
             onCancel={onCancelConnectHardwareWallet}
-            walletName={selectedAccount.name}
-            accountAddress={selectedAccount.address}
-            coinType={selectedAccount.accountId.coin}
+            account={selectedAccount}
             hardwareWalletCode={hardwareWalletCode}
             onClickInstructions={onClickInstructions}
           />
