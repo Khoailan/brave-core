@@ -37,9 +37,7 @@ bool BraveAutoplayBlockedImageModel::UpdateAndGetVisibility(
   if (!content_settings->IsContentBlocked(content_type()))
     return false;
 
-  const gfx::VectorIcon* badge_id = &vector_icons::kBlockedBadgeIcon;
-  const gfx::VectorIcon* icon = &kAutoplayStatusIcon;
-  set_icon(*icon, *badge_id);
+  SetIcon(ContentSettingsType::AUTOPLAY, /*blocked=*/true);
   set_explanatory_string_id(IDS_BLOCKED_AUTOPLAY_TITLE);
   set_tooltip(
       brave_l10n::GetLocalizedResourceUTF16String(IDS_BLOCKED_AUTOPLAY_TITLE));
