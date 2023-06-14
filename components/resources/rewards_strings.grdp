@@ -33,6 +33,9 @@
   <message name="IDS_REWARDS_WALLET_LOG_INTO_YOUR_ACCOUNT" desc="">
     Log in to your <ph name="PROVIDER">$1<ex>Uphold</ex></ph> account
   </message>
+  <message name="IDS_REWARDS_WALLET_MANAGE_ADS" desc="">
+    Manage ads
+  </message>
   <message name="IDS_REWARDS_WALLET_MONTHLY_TIPS" desc="">
     Monthly Contributions
   </message>

@@ -25,6 +25,7 @@
 #include "brave/components/brave_ads/common/pref_names.h"
 #include "brave/components/brave_ads/core/ads_util.h"
 #include "brave/components/brave_ads/core/supported_subdivisions.h"
+#include "brave/components/brave_news/common/pref_names.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service_observer.h"
 #include "brave/components/brave_rewards/browser/rewards_service.h"
@@ -36,6 +37,7 @@
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
 #include "brave/components/constants/webui_url_constants.h"
 #include "brave/components/l10n/common/locale_util.h"
+#include "brave/components/ntp_background_images/common/pref_names.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -557,6 +559,21 @@ void RewardsDOMHandler::InitPrefChangeRegistrar() {
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       brave_rewards::prefs::kInlineTipGithubEnabled,
+      base::BindRepeating(&RewardsDOMHandler::OnPrefChanged,
+                          base::Unretained(this)));
+
+  pref_change_registrar_.Add(
+      brave_news::prefs::kBraveNewsOptedIn,
+      base::BindRepeating(&RewardsDOMHandler::OnPrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      brave_news::prefs::kNewTabPageShowToday,
+      base::BindRepeating(&RewardsDOMHandler::OnPrefChanged,
+                          base::Unretained(this)));
+
+  pref_change_registrar_.Add(
+      ntp_background_images::prefs::
+          kNewTabPageShowSponsoredImagesBackgroundImage,
       base::BindRepeating(&RewardsDOMHandler::OnPrefChanged,
                           base::Unretained(this)));
 }
@@ -1186,6 +1203,15 @@ void RewardsDOMHandler::GetAdsData(const base::Value::List& args) {
   ads_data.Set("subdivisions",
                brave_ads::GetSupportedSubdivisionsAsValueList());
 
+  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  ads_data.Set(
+      "newTabAdsEnabled",
+      prefs->GetBoolean(ntp_background_images::prefs::
+                            kNewTabPageShowSponsoredImagesBackgroundImage));
+  ads_data.Set("newsAdsEnabled",
+               prefs->GetBoolean(brave_news::prefs::kBraveNewsOptedIn) &&
+                   prefs->GetBoolean(brave_news::prefs::kNewTabPageShowToday));
+
   CallJavascriptFunction("brave_rewards.adsData", ads_data);
 }
 
@@ -1413,6 +1439,10 @@ void RewardsDOMHandler::SaveAdsSetting(const base::Value::List& args) {
 
     prefs->SetInt64(brave_ads::prefs::kMaximumNotificationAdsPerHour,
                     int64_value);
+  } else if (key == "newTabAdsEnabled") {
+    prefs->SetBoolean(ntp_background_images::prefs::
+                          kNewTabPageShowSponsoredImagesBackgroundImage,
+                      value == "true");
   } else if (key == kAdsSubdivisionTargeting) {
     ads_service_->SetSubdivisionTargetingCode(value);
   } else if (key == kAutoDetectedSubdivisionTargeting) {
@@ -1456,6 +1486,12 @@ void RewardsDOMHandler::OnGetStatement(
   dict.Set("adsMaxEarningsThisMonth", statement->max_earnings_this_month);
   dict.Set("adsMinEarningsLastMonth", statement->min_earnings_last_month);
   dict.Set("adsMaxEarningsLastMonth", statement->max_earnings_last_month);
+
+  base::Value::Dict ad_types_received;
+  for (const auto& [ad_type, count] : statement->ad_types_received_this_month) {
+    ad_types_received.Set(ad_type, base::Value(count));
+  }
+  dict.Set("adTypesReceivedThisMonth", std::move(ad_types_received));
 
   CallJavascriptFunction("brave_rewards.statement", dict);
 }
@@ -1504,8 +1540,6 @@ void RewardsDOMHandler::GetEnabledInlineTippingPlatforms(
     const base::Value::List& args) {
   AllowJavascript();
 
-  // TODO(zenparsing): Consider using a PrefChangeRegistrar to monitor changes
-  // to these values.
   auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   base::Value::List list;
 

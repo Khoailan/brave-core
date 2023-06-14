@@ -233,8 +233,11 @@ export interface AdsData {
   adsUIEnabled: boolean
   adsIsSupported: boolean
   needsBrowserUpgradeToServeAds: boolean
+  newTabAdsEnabled: boolean
+  newsAdsEnabled: boolean
   adsNextPaymentDate: number
   adsReceivedThisMonth: number
+  adTypesReceivedThisMonth: Record<string, number>
   adsMinEarningsThisMonth: number
   adsMaxEarningsThisMonth: number
   adsMinEarningsLastMonth: number
@@ -277,8 +280,15 @@ export interface AdHistory {
   categoryContent: CategoryContent
 }
 
+export type AdType =
+  '' |
+  'ad_notification' |
+  'new_tab_page_ad' |
+  'promoted_content_ad' |
+  'inline_content_ad'
+
 export interface AdContent {
-  adType: '' | 'ad_notification' | 'new_tab_page_ad' | 'promoted_content_ad' | 'inline_content_ad'
+  adType: AdType
   creativeInstanceId: string
   creativeSetId: string
   brand: string

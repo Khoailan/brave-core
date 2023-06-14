@@ -15,7 +15,7 @@ namespace brave_ads {
 
 class BraveAdsAdsReceivedUtilTest : public UnitTestBase {};
 
-TEST_F(BraveAdsAdsReceivedUtilTest, GetAdsReceivedForDateRange) {
+TEST_F(BraveAdsAdsReceivedUtilTest, GetAdTypesReceivedForDateRange) {
   // Arrange
   AdvanceClockTo(TimeFromString("5 November 2020", /*is_local*/ true));
 
@@ -44,10 +44,12 @@ TEST_F(BraveAdsAdsReceivedUtilTest, GetAdsReceivedForDateRange) {
   transactions.push_back(transaction_4);
 
   // Act
+  auto result =
+      GetAdTypesReceivedForDateRange(transactions, from_time, DistantFuture());
 
   // Assert
-  EXPECT_EQ(
-      2U, GetAdsReceivedForDateRange(transactions, from_time, DistantFuture()));
+  EXPECT_EQ(result.size(), 1ull);
+  EXPECT_EQ(result["ad_notification"], 2);
 }
 
 TEST_F(BraveAdsAdsReceivedUtilTest, DoNotGetAdsReceivedForDateRange) {
@@ -67,21 +69,23 @@ TEST_F(BraveAdsAdsReceivedUtilTest, DoNotGetAdsReceivedForDateRange) {
   AdvanceClockTo(TimeFromString("1 January 2021", /*is_local*/ true));
 
   // Act
+  auto result =
+      GetAdTypesReceivedForDateRange(transactions, Now(), DistantFuture());
 
   // Assert
-  EXPECT_EQ(0U,
-            GetAdsReceivedForDateRange(transactions, Now(), DistantFuture()));
+  EXPECT_TRUE(result.empty());
 }
 
-TEST_F(BraveAdsAdsReceivedUtilTest, GetAdsReceivedForNoTransactions) {
+TEST_F(BraveAdsAdsReceivedUtilTest, GetAdTypesReceivedForNoTransactions) {
   // Arrange
   const TransactionList transactions;
 
   // Act
+  auto result = GetAdTypesReceivedForDateRange(transactions, DistantPast(),
+                                               DistantFuture());
 
   // Assert
-  EXPECT_EQ(0U, GetAdsReceivedForDateRange(transactions, DistantPast(),
-                                           DistantFuture()));
+  EXPECT_TRUE(result.empty());
 }
 
 }  // namespace brave_ads

@@ -371,8 +371,9 @@ void CustomizeWebUIHTMLSource(content::WebUI* web_ui,
     }, {
       std::string("rewards"), {
         { "adsCurrentEarnings",  IDS_BRAVE_REWARDS_LOCAL_ADS_CURRENT_EARNINGS },
-        { "adsDesc",  IDS_BRAVE_REWARDS_LOCAL_ADS_DESC },
-        { "adsNotificationsReceived",  IDS_BRAVE_REWARDS_LOCAL_ADS_NOTIFICATIONS_RECEIVED },     // NOLINT
+        { "adsDescription",  IDS_BRAVE_REWARDS_LOCAL_ADS_DESCRIPTION },
+        { "adsDescriptionUnconnected",  IDS_BRAVE_REWARDS_LOCAL_ADS_DESCRIPTION_UNCONNECTED },  // NOLINT
+        { "adsTotalReceivedLabel",  IDS_BRAVE_REWARDS_LOCAL_ADS_TOTAL_RECEIVED },  // NOLINT
         { "adsNotSupportedRegion", IDS_BRAVE_REWARDS_LOCAL_ADS_NOT_SUPPORTED_REGION },           // NOLINT
         { "adsNotSupportedDevice", IDS_BRAVE_REWARDS_LOCAL_ADS_NOT_SUPPORTED_DEVICE },           // NOLINT
         { "adsPaymentDate",  IDS_BRAVE_REWARDS_LOCAL_ADS_PAYMENT_DATE },
@@ -392,6 +393,11 @@ void CustomizeWebUIHTMLSource(content::WebUI* web_ui,
         { "adsSubdivisionTargetingDisable",  IDS_BRAVE_REWARDS_LOCAL_ADS_SUBDIVISION_TARGETING_DISABLE },  // NOLINT
         { "adsSubdivisionTargetingDisabled",  IDS_BRAVE_REWARDS_LOCAL_ADS_SUBDIVISION_TARGETING_DISABLED },  // NOLINT
         { "adsTitle",  IDS_BRAVE_REWARDS_LOCAL_ADS_TITLE },
+        { "newTabAdCountLabel", IDS_BRAVE_REWARDS_NEW_TAB_AD_COUNT_LABEL},
+        { "notificationAdCountLabel", IDS_BRAVE_REWARDS_NOTIFICATION_AD_COUNT_LABEL},  // NOLINT
+        { "newsAdCountLabel", IDS_BRAVE_REWARDS_NEWS_AD_COUNT_LABEL},
+        { "newsAdInfo", IDS_BRAVE_REWARDS_NEWS_AD_INFO },
+        { "newsAdInfoDisabled", IDS_BRAVE_REWARDS_NEWS_AD_INFO_DISABLED },
         { "appErrorTitle", IDS_REWARDS_APP_ERROR_TITLE },
 
         { "bat", IDS_BRAVE_UI_BAT_REWARDS_TEXT },

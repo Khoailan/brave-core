@@ -5,6 +5,7 @@
 
 import styled from 'styled-components'
 
+import * as leo from '@brave/leo/tokens/css'
 import * as mixins from '../../shared/lib/css_mixins'
 
 export const panel = styled.div`
@@ -38,7 +39,7 @@ export const title = styled.div`
   font-weight: 600;
   font-size: 22px;
   line-height: 28px;
-  color: var(--settings-panel-title-color, #495057);
+  color: var(--settings-panel-title-color, ${leo.color.light.text.primary});
 `
 
 export const config = styled.div`
@@ -84,7 +85,7 @@ export const itemLabel = styled.div`
   color: #495057;
 `
 
-export const itemDescription = styled.div`
+export const itemDetails = styled.div`
   padding-top: 8px;
   color: #686978;
 `

@@ -216,16 +216,20 @@ const rewardsReducer: Reducer<Rewards.State | undefined> = (state: Rewards.State
         break
       }
 
-      state = { ...state }
-      state.adsData.adsEnabled = action.payload.adsData.adsEnabled
-      state.adsData.adsPerHour = action.payload.adsData.adsPerHour
-      state.adsData.adsSubdivisionTargeting = action.payload.adsData.adsSubdivisionTargeting
-      state.adsData.automaticallyDetectedAdsSubdivisionTargeting = action.payload.adsData.automaticallyDetectedAdsSubdivisionTargeting
-      state.adsData.shouldAllowAdsSubdivisionTargeting = action.payload.adsData.shouldAllowAdsSubdivisionTargeting
-      state.adsData.subdivisions = action.payload.adsData.subdivisions
-      state.adsData.adsUIEnabled = action.payload.adsData.adsUIEnabled
-      state.adsData.adsIsSupported = action.payload.adsData.adsIsSupported
-      state.adsData.needsBrowserUpgradeToServeAds = action.payload.adsData.needsBrowserUpgradeToServeAds
+      state = {...state}
+
+      const { adsData } = action.payload
+      state.adsData.adsEnabled = adsData.adsEnabled
+      state.adsData.adsPerHour = adsData.adsPerHour
+      state.adsData.adsSubdivisionTargeting = adsData.adsSubdivisionTargeting
+      state.adsData.automaticallyDetectedAdsSubdivisionTargeting = adsData.automaticallyDetectedAdsSubdivisionTargeting
+      state.adsData.shouldAllowAdsSubdivisionTargeting = adsData.shouldAllowAdsSubdivisionTargeting
+      state.adsData.subdivisions = adsData.subdivisions
+      state.adsData.adsUIEnabled = adsData.adsUIEnabled
+      state.adsData.adsIsSupported = adsData.adsIsSupported
+      state.adsData.needsBrowserUpgradeToServeAds = adsData.needsBrowserUpgradeToServeAds
+      state.adsData.newTabAdsEnabled = adsData.newTabAdsEnabled
+      state.adsData.newsAdsEnabled = adsData.newsAdsEnabled
       break
     }
     case types.GET_ADS_HISTORY: {
@@ -321,6 +325,7 @@ const rewardsReducer: Reducer<Rewards.State | undefined> = (state: Rewards.State
       const data = action.payload.data
       state.adsData.adsNextPaymentDate = data.adsNextPaymentDate
       state.adsData.adsReceivedThisMonth = data.adsReceivedThisMonth
+      state.adsData.adTypesReceivedThisMonth = data.adTypesReceivedThisMonth
       state.adsData.adsMinEarningsThisMonth = data.adsMinEarningsThisMonth
       state.adsData.adsMaxEarningsThisMonth = data.adsMaxEarningsThisMonth
       state.adsData.adsMinEarningsLastMonth = data.adsMinEarningsLastMonth
