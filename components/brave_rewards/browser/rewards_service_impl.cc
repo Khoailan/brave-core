@@ -51,7 +51,7 @@
 #include "brave/components/brave_rewards/core/global_constants.h"
 #include "brave/components/brave_rewards/core/ledger_database.h"
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
-#include "brave/components/services/bat_ledger/public/interfaces/ledger_factory.mojom.h"
+#include "brave/components/services/bat_ledger/ledger_factory_impl.h"
 #include "brave/grit/brave_generated_resources.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -349,7 +349,7 @@ void RewardsServiceImpl::ConnectionClosed() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RewardsServiceImpl::StartLedgerIfNecessary, AsWeakPtr()),
-      base::Seconds(1));
+      base::Seconds(5));
 }
 
 bool RewardsServiceImpl::IsInitialized() {
@@ -449,6 +449,13 @@ void RewardsServiceImpl::StartLedgerIfNecessary() {
 
   BLOG(1, "Starting ledger process");
 
+  /*
+  if (!ledger_factory_.is_bound()) {
+    ledger_factory_ = internal::LedgerFactoryImpl::CreateSelfOwnedReceiver();
+    DCHECK(ledger_factory_.is_bound());
+  }
+  */
+
   static mojo::Remote<mojom::LedgerFactory> ledger_factory;
   if (!ledger_factory.is_bound()) {
     ledger_factory = content::ServiceProcessHost::Launch<mojom::LedgerFactory>(
@@ -461,14 +468,14 @@ void RewardsServiceImpl::StartLedgerIfNecessary() {
   BLOG(1, "Creating rewards engine instance");
 
   ledger_factory->CreateLedger(
-      ledger_.BindNewEndpointAndPassReceiver(),
-      receiver_.BindNewEndpointAndPassRemote(),
+      ledger_.BindNewPipeAndPassReceiver(),
+      receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&RewardsServiceImpl::OnLedgerCreated, AsWeakPtr()));
 
   ledger_.set_disconnect_handler(
       base::BindOnce(&RewardsServiceImpl::ConnectionClosed, AsWeakPtr()));
 
-  receiver_.reset_on_disconnect();
+  // receiver_.reset_on_disconnect();
 }
 
 void RewardsServiceImpl::OnLedgerCreated() {

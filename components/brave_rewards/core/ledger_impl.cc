@@ -15,6 +15,7 @@
 #include "brave/components/brave_rewards/core/global_constants.h"
 #include "brave/components/brave_rewards/core/legacy/static_values.h"
 #include "brave/components/brave_rewards/core/publisher/publisher_status_helper.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 using std::placeholders::_1;
 
@@ -22,18 +23,20 @@ namespace brave_rewards::internal {
 
 namespace {
 
-base::SequenceLocalStorageSlot<LedgerImpl*> g_ledger_slot;
+base::SequenceLocalStorageSlot<LedgerImpl*> sequence_ledger_instance;
+base::SequenceLocalStorageSlot<mojo::ScopedAllowSyncCallForTesting>
+    sequence_allow_sync_calls;
 
 }  // namespace
 
 LedgerImpl& LedgerImpl::GetForCurrentSequence() {
-  CHECK(g_ledger_slot) << "LedgerImpl has not been created for the current "
-                          "sequence";
-  return **g_ledger_slot;
+  CHECK(sequence_ledger_instance)
+      << "LedgerImpl has not been created for the current sequence";
+  return **sequence_ledger_instance;
 }
 
 LedgerImpl::LedgerImpl(
-    mojo::PendingAssociatedRemote<mojom::LedgerClient> ledger_client_remote)
+    mojo::PendingRemote<mojom::LedgerClient> ledger_client_remote)
     : ledger_client_(std::move(ledger_client_remote)),
       promotion_(*this),
       publisher_(*this),
@@ -48,15 +51,16 @@ LedgerImpl::LedgerImpl(
       bitflyer_(*this),
       gemini_(*this),
       uphold_(*this) {
-  CHECK(!g_ledger_slot) << "LedgerImpl has already been created for the "
-                        << "current sequence";
-  g_ledger_slot.emplace(this);
+  CHECK(!sequence_ledger_instance)
+      << "LedgerImpl has already been created for the current sequence";
+  sequence_ledger_instance.emplace(this);
+  sequence_allow_sync_calls.GetOrCreateValue();
   ledger_client_.reset_on_disconnect();
 }
 
 LedgerImpl::~LedgerImpl() {
-  DCHECK(g_ledger_slot);
-  *g_ledger_slot = nullptr;
+  DCHECK(sequence_ledger_instance);
+  *sequence_ledger_instance = nullptr;
 }
 
 // mojom::Ledger implementation begin (in the order of appearance in Mojom)

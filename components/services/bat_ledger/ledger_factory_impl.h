@@ -8,15 +8,19 @@
 
 #include "base/memory/weak_ptr.h"
 #include "brave/components/services/bat_ledger/public/interfaces/ledger_factory.mojom.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace brave_rewards::internal {
 
 class LedgerFactoryImpl : public mojom::LedgerFactory {
  public:
+  static mojo::Remote<mojom::LedgerFactory> CreateSelfOwnedReceiver();
+
+  LedgerFactoryImpl();
+
   explicit LedgerFactoryImpl(
       mojo::PendingReceiver<mojom::LedgerFactory> receiver);
 
@@ -26,8 +30,8 @@ class LedgerFactoryImpl : public mojom::LedgerFactory {
   LedgerFactoryImpl& operator=(const LedgerFactoryImpl&) = delete;
 
   void CreateLedger(
-      mojo::PendingAssociatedReceiver<mojom::Ledger> ledger_receiver,
-      mojo::PendingAssociatedRemote<mojom::LedgerClient> ledger_client_remote,
+      mojo::PendingReceiver<mojom::Ledger> ledger_receiver,
+      mojo::PendingRemote<mojom::LedgerClient> ledger_client_remote,
       CreateLedgerCallback callback) override;
 
  private:

@@ -8,6 +8,6 @@ import "brave/components/brave_rewards/common/mojom/bat_ledger.mojom";
 
 interface LedgerFactory {
   CreateLedger(
-      pending_associated_receiver<Ledger> ledger_receiver,
-      pending_associated_remote<LedgerClient> ledger_client_remote) => ();
+      pending_receiver<Ledger> ledger_receiver,
+      pending_remote<LedgerClient> ledger_client_remote) => ();
 };

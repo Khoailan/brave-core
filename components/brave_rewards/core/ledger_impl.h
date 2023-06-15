@@ -29,8 +29,8 @@
 #include "brave/components/brave_rewards/core/state/state.h"
 #include "brave/components/brave_rewards/core/uphold/uphold.h"
 #include "brave/components/brave_rewards/core/wallet/wallet.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace brave_rewards::internal {
 
@@ -47,7 +47,7 @@ class LedgerImpl : public mojom::Ledger {
   static LedgerImpl& GetForCurrentSequence();
 
   explicit LedgerImpl(
-      mojo::PendingAssociatedRemote<mojom::LedgerClient> ledger_client_remote);
+      mojo::PendingRemote<mojom::LedgerClient> ledger_client_remote);
 
   ~LedgerImpl() override;
 
@@ -441,7 +441,7 @@ class LedgerImpl : public mojom::Ledger {
   template <typename T>
   void WhenReady(T callback);
 
-  mojo::AssociatedRemote<mojom::LedgerClient> ledger_client_;
+  mojo::Remote<mojom::LedgerClient> ledger_client_;
 
   promotion::Promotion promotion_;
   publisher::Publisher publisher_;

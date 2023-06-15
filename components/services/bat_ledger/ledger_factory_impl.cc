@@ -10,7 +10,7 @@
 
 #include "base/task/thread_pool.h"
 #include "brave/components/brave_rewards/core/ledger_impl.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace brave_rewards::internal {
 
@@ -18,25 +18,37 @@ namespace {
 
 void CreateLedgerOnSequence(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojo::PendingAssociatedReceiver<mojom::Ledger> receiver,
-    mojo::PendingAssociatedRemote<mojom::LedgerClient> client_remote) {
+    mojo::PendingReceiver<mojom::Ledger> receiver,
+    mojo::PendingRemote<mojom::LedgerClient> client_remote) {
   auto instance = std::make_unique<LedgerImpl>(std::move(client_remote));
   // A self-owner receiver will delete the instance when the pipe is destroyed.
-  mojo::MakeSelfOwnedAssociatedReceiver(std::move(instance),
-                                        std::move(receiver), task_runner);
+  mojo::MakeSelfOwnedReceiver(std::move(instance), std::move(receiver),
+                              task_runner);
 }
 
 }  // namespace
+
+mojo::Remote<mojom::LedgerFactory>
+LedgerFactoryImpl::CreateSelfOwnedReceiver() {
+  mojo::Remote<mojom::LedgerFactory> remote;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<LedgerFactoryImpl>(),
+                              remote.BindNewPipeAndPassReceiver());
+  return remote;
+}
+
+LedgerFactoryImpl::LedgerFactoryImpl() : receiver_(this) {}
 
 LedgerFactoryImpl::LedgerFactoryImpl(
     mojo::PendingReceiver<mojom::LedgerFactory> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-LedgerFactoryImpl::~LedgerFactoryImpl() = default;
+LedgerFactoryImpl::~LedgerFactoryImpl() {
+  LOG(ERROR) << "LedgerFactory destructor";
+}
 
 void LedgerFactoryImpl::CreateLedger(
-    mojo::PendingAssociatedReceiver<mojom::Ledger> ledger_receiver,
-    mojo::PendingAssociatedRemote<mojom::LedgerClient> ledger_client_remote,
+    mojo::PendingReceiver<mojom::Ledger> ledger_receiver,
+    mojo::PendingRemote<mojom::LedgerClient> ledger_client_remote,
     CreateLedgerCallback callback) {
   // Ledger instances must be created on their own unique sequences because they
   // take advantage of sequence-local state. Create a new sequenced task runner
