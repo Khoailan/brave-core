@@ -85,4 +85,7 @@ void __attribute__((weak)) __rust_alloc_error_handler(size_t a, size_t b) {
 extern const unsigned char __attribute__((weak))
 __rust_alloc_error_handler_should_panic = 0;
 
+[[maybe_unused]] __attribute__((
+    weak)) unsigned char __rust_no_alloc_shim_is_unstable;
+
 }  // extern "C"
