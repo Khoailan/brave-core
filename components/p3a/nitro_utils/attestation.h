@@ -26,6 +26,20 @@ void RequestAndVerifyAttestationDocument(
     base::OnceCallback<void(scoped_refptr<net::X509Certificate>)>
         result_callback);
 
+// Functions used for unit tests
+//
+// These take the cbor serialization of just the attestation document
+// portion of the COSE Sign1 object returned by the AWS Nitro enclave
+// in reponse to remote attestation requests.
+//
+// Verify the nonce value passed with the attestation request.
+bool VerifyNonceForTesting(const std::vector<uint8_t>& attestation_bytes,
+                           const std::vector<uint8_t>& orig_nonce);
+// Verify the TLS certificate fingerprint returned with the attestation request.
+bool VerifyUserDataKeyForTesting(
+    const std::vector<uint8_t>& attestation_bytes,
+    scoped_refptr<net::X509Certificate> server_cert);
+
 }  // namespace nitro_utils
 
 #endif  // BRAVE_COMPONENTS_P3A_NITRO_UTILS_ATTESTATION_H_
