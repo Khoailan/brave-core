@@ -6,6 +6,8 @@
 #ifndef BRAVE_COMPONENTS_P3A_NITRO_UTILS_ATTESTATION_H_
 #define BRAVE_COMPONENTS_P3A_NITRO_UTILS_ATTESTATION_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
