@@ -136,7 +136,7 @@ android_test_exception_deps = [
 android_only_test_sources = [
   "//chrome/test/android/browsertests_apk/android_browsertests_jni_onload.cc",
   "//chrome/test/base/android/android_browser_test_browsertest_android.cc",
-  "//brave/test/base/android/android_browser_test_swap_appearing_test.cc",
+  "//brave/components/brave_wallet/browser/android_swap_page_appearing_browsertest.cc",
 ]
 
 android_only_test_deps = [
@@ -166,8 +166,4 @@ android_only_test_deps = [
   "//content/shell:content_shell_lib",
   "//content/test:android_test_message_pump_support",
   "//testing/android/native_test:native_test_support",
- # "//brave/components/brave_wallet_ui:resources",
- # "//brave/components/brave_wallet_ui/page/screens/swap/android:brave_wallet_swap_page_generated",
- # "//components/signin/public/android:signin_java_test_support",
- # "//components/signin/public/android:test_support_jni_headers",
 ]

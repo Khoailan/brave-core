@@ -56,11 +56,11 @@ SwapPageUI::SwapPageUI(content::WebUI* web_ui, const std::string& name)
     source->AddString(str.name, l10n_str);
   }
 
-  webui::SetupWebUIDataSource(
+/*   webui::SetupWebUIDataSource(
       source,
       base::make_span(kBraveWalletSwapPageGenerated,
                       kBraveWalletSwapPageGeneratedSize),
-      IDR_BRAVE_WALLET_SWAP_PAGE_HTML);
+      IDR_BRAVE_WALLET_SWAP_PAGE_HTML); */
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -81,6 +81,7 @@ SwapPageUI::SwapPageUI(content::WebUI* web_ui, const std::string& name)
   source->AddBoolean(brave_wallet::mojom::kP3ACountTestNetworksLoadTimeKey,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          brave_wallet::mojom::kP3ACountTestNetworksSwitch));
+ //  source->DisableContentSecurityPolicy();        
 
   brave_wallet::AddBlockchainTokenImageSource(profile);
 }
@@ -91,6 +92,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SwapPageUI)
 
 void SwapPageUI::BindInterface(
     mojo::PendingReceiver<brave_wallet::mojom::PageHandlerFactory> receiver) {
+        LOG(INFO) << "!!! SwapPageUI::BindInterface";
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
 }
@@ -128,6 +130,7 @@ void SwapPageUI::CreatePageHandler(
         brave_wallet_auto_pin_service_receiver,
     mojo::PendingReceiver<brave_wallet::mojom::IpfsService>
         ipfs_service_receiver) {
+LOG(INFO) << "!!! SwapPageUI::CreatePageHandler";            
   DCHECK(page);
   auto* profile = Profile::FromWebUI(web_ui());
   DCHECK(profile);
