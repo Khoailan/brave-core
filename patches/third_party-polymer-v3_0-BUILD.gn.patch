@@ -1,5 +1,5 @@
 diff --git a/third_party/polymer/v3_0/BUILD.gn b/third_party/polymer/v3_0/BUILD.gn
-index 5f4b3b4c9101bd96ad0aeba0deeda8e7b1683188..0175c1ebf83aff4e255751167a950eacfd8a3e50 100644
+index 5d11077706efd09792b2cb30bafd676dc28c2879..fc9cff6c717c1b2b1abc9da6275e291923fceaee 100644
 --- a/third_party/polymer/v3_0/BUILD.gn
 +++ b/third_party/polymer/v3_0/BUILD.gn
 @@ -46,7 +46,7 @@ js_files = [
@@ -11,7 +11,7 @@ index 5f4b3b4c9101bd96ad0aeba0deeda8e7b1683188..0175c1ebf83aff4e255751167a950eac
    js_files += [
      "iron-dropdown/iron-dropdown.js",
      "iron-dropdown/iron-dropdown-scroll-manager.js",
-@@ -177,7 +177,7 @@ ts_library("library") {
+@@ -178,7 +178,7 @@ ts_library("library") {
      "components-chromium/polymer/polymer-legacy.d.ts",
    ]
  

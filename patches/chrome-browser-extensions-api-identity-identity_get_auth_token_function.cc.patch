@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/extensions/api/identity/identity_get_auth_token_function.cc b/chrome/browser/extensions/api/identity/identity_get_auth_token_function.cc
-index a8bf4cecf73252e45eac8d3005e1b926cd14fa1a..cb90a6ca1157e3003a59b8854198ca4869a536a1 100644
+index e475b60a6ff2274f327fc74d2d3f5cd18203b659..36006885891b509749c9933501a5a49034c1761f 100644
 --- a/chrome/browser/extensions/api/identity/identity_get_auth_token_function.cc
 +++ b/chrome/browser/extensions/api/identity/identity_get_auth_token_function.cc
-@@ -193,6 +193,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
+@@ -170,6 +170,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
    // From here on out, results must be returned asynchronously.
    StartAsyncRun();
  
@@ -10,7 +10,7 @@ index a8bf4cecf73252e45eac8d3005e1b926cd14fa1a..cb90a6ca1157e3003a59b8854198ca48
    if (gaia_id.empty() || IsPrimaryAccountOnly()) {
      // Try the primary account.
      // TODO(https://crbug.com/932400): collapse the asynchronicity
-@@ -417,10 +418,12 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
+@@ -393,10 +394,12 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
  void IdentityGetAuthTokenFunction::StartMintTokenFlow(
      IdentityMintRequestQueue::MintType type) {
  #if !BUILDFLAG(IS_CHROMEOS)

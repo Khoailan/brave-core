@@ -1,8 +1,8 @@
 diff --git a/ios/chrome/browser/shared/model/prefs/browser_prefs.mm b/ios/chrome/browser/shared/model/prefs/browser_prefs.mm
-index be46b2f07913f9b829ab54c735ab5ae5ab9a11bc..47188c4d36d7a087e5856816972f93c663f8c13e 100644
+index da27c58a11901a8d1f8f5572873b9d0d9d5548ed..4278a8dce47fde30fd5250f98ae4a89daeea1868 100644
 --- a/ios/chrome/browser/shared/model/prefs/browser_prefs.mm
 +++ b/ios/chrome/browser/shared/model/prefs/browser_prefs.mm
-@@ -245,6 +245,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+@@ -249,6 +249,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
  
    registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                  0);
@@ -10,7 +10,7 @@ index be46b2f07913f9b829ab54c735ab5ae5ab9a11bc..47188c4d36d7a087e5856816972f93c6
  }
  
  void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
-@@ -401,6 +402,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
+@@ -413,6 +414,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
    ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
  
    registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
@@ -18,7 +18,7 @@ index be46b2f07913f9b829ab54c735ab5ae5ab9a11bc..47188c4d36d7a087e5856816972f93c6
  }
  
  // This method should be periodically pruned of year+ old migrations.
-@@ -477,4 +479,5 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
+@@ -487,4 +489,5 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
  
    // Added 04/2023.
    ntp_snippets::prefs::MigrateObsoleteProfilePrefsApril2023(prefs);

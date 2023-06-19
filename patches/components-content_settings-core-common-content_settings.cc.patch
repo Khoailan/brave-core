@@ -1,5 +1,5 @@
 diff --git a/components/content_settings/core/common/content_settings.cc b/components/content_settings/core/common/content_settings.cc
-index 9fa95733b041775e4672724672024297fa9e3741..8c0afba70d46b929ed89f8bc5f2c87d0d3a4615e 100644
+index 66787891c1ba2a0c43a3195395918ccad800b6f2..f6cdad43e556c1e51ca26f77ce8a59a7ae4db028 100644
 --- a/components/content_settings/core/common/content_settings.cc
 +++ b/components/content_settings/core/common/content_settings.cc
 @@ -127,6 +127,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
