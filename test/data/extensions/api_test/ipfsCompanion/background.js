@@ -100,6 +100,56 @@ function getSettings(expected_json) {
   })
 }
 
+function setResolveMethod(method) {
+  chrome.ipfs.setResolveMethod(method, (result) => {
+    if (result) {
+      chrome.test.succeed();
+    } else {
+      chrome.test.fail();
+    }
+  })
+}
+
+function setPublicGateway(url) {
+  chrome.ipfs.setPublicGateway(url, (result) => {
+    if (result) {
+      chrome.test.succeed();
+    } else {
+      chrome.test.fail();
+    }
+  })
+}
+
+function setDNSLinkRedirectEnabled(value) {
+  chrome.ipfs.setDNSLinkRedirectEnabled(value, (result) => {
+    if (result) {
+      chrome.test.succeed();
+    } else {
+      chrome.test.fail();
+    }
+  })
+}
+
+function setGatewayResourcesRedirectEnabled(value) {
+  chrome.ipfs.setGatewayResourcesRedirectEnabled(value, (result) => {
+    if (result) {
+      chrome.test.succeed();
+    } else {
+      chrome.test.fail();
+    }
+  })
+}
+
+function setGatewayFallbackEnabled(value) {
+  chrome.ipfs.setGatewayFallbackEnabled(value, (result) => {
+    if (result) {
+      chrome.test.succeed();
+    } else {
+      chrome.test.fail();
+    }
+  })
+}
+
 function testBasics() {
   chrome.test.runTests([
     function ipfsCompanionExtensionHasAccess() {
