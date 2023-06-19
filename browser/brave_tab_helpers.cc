@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_WIDEVINE)
+#if BUILDFLAG(ENABLE_WIDEVINE) && !BUILDFLAG(IS_ANDROID)
 #include "brave/browser/brave_drm_tab_helper.h"
 #endif
 
@@ -105,7 +105,7 @@ void AttachTabHelpers(content::WebContents* web_contents) {
 
   brave_rewards::RewardsTabHelper::CreateForWebContents(web_contents);
 
-#if BUILDFLAG(ENABLE_WIDEVINE)
+#if BUILDFLAG(ENABLE_WIDEVINE) && !BUILDFLAG(IS_ANDROID)
   BraveDrmTabHelper::CreateForWebContents(web_contents);
 #endif
 
