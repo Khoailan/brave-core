@@ -33,10 +33,10 @@ cargo_crate("lib") {
     "named_entities.rs",
   ]
   deps = [
-    "//brave/third_party/rust/log/v0_4:lib",
     "//brave/third_party/rust/phf/v0_8:lib",
     "//brave/third_party/rust/string_cache/v0_8:lib",
     "//brave/third_party/rust/tendril/v0_4:lib",
+    "//third_party/rust/log/v0_4:lib",
   ]
   cargo_manifest_dir =
       rebase_path("//brave/third_party/rust/markup5ever/v0_10/crate")

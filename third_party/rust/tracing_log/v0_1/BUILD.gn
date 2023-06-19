@@ -25,8 +25,8 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//brave/third_party/rust/lazy_static/v1:lib",
-    "//brave/third_party/rust/log/v0_4:lib",
     "//brave/third_party/rust/tracing_core/v0_1:lib",
+    "//third_party/rust/log/v0_4:lib",
   ]
   features = [
     "log-tracer",

@@ -28,8 +28,8 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    "//brave/third_party/rust/anyhow/v1:lib",
     "//brave/third_party/rust/cid/v0_8:lib",
     "//brave/third_party/rust/multihash/v0_16:lib",
+    "//third_party/rust/anyhow/v1:lib",
   ]
 }

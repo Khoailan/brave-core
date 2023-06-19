@@ -31,9 +31,9 @@ cargo_crate("lib") {
   build_sources = [ "crate/build.rs" ]
   build_script_outputs = [ "rules.rs" ]
   deps = [
-    "//brave/third_party/rust/log/v0_4:lib",
     "//brave/third_party/rust/mac/v0_1:lib",
     "//brave/third_party/rust/markup5ever/v0_10:lib",
+    "//third_party/rust/log/v0_4:lib",
   ]
   cargo_manifest_dir =
       rebase_path("//brave/third_party/rust/html5ever/v0_25/crate")
