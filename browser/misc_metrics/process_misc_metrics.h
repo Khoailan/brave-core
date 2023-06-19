@@ -31,9 +31,6 @@ class ProcessMiscMetrics {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   MenuMetrics* menu_metrics();
-#if !BUILDFLAG(IS_ANDROID)
-  VerticalTabMetrics* vertical_tab_metrics();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   std::unique_ptr<MenuMetrics> menu_metrics_;

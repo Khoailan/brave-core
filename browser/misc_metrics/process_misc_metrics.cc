@@ -5,13 +5,13 @@
 
 #include "brave/browser/misc_metrics/process_misc_metrics.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "brave/browser/misc_metrics/vertical_tab_metrics.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #include "brave/components/misc_metrics/menu_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "brave/browser/misc_metrics/vertical_tab_metrics.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace misc_metrics {
 
@@ -27,12 +27,6 @@ ProcessMiscMetrics::~ProcessMiscMetrics() = default;
 MenuMetrics* ProcessMiscMetrics::menu_metrics() {
   return menu_metrics_.get();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-VerticalTabMetrics* ProcessMiscMetrics::vertical_tab_metrics() {
-  return vertical_tab_metrics_.get();
-}
-#endif
 
 void ProcessMiscMetrics::RegisterPrefs(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
