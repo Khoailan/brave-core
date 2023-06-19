@@ -37,7 +37,9 @@ namespace nitro_utils {
 namespace {
 
 constexpr size_t kAttestationBodyMaxSize = 16384;
-// The user_data field contains a multihash of the TLS cert
+// The user_data field contains a multihash of the TLS cert fingerprint
+// See https://multiformats.io/multihash/#the-multihash-format and
+// https://github.com/multiformats/multicodec/blob/b98f2f38fc63/table.csv#L9
 constexpr size_t kMultihashPrefixLength = 2;
 constexpr size_t kMultihashSHA256Code = 0x12;
 constexpr size_t kSHA256HashLength = 32;
