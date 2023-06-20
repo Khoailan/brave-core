@@ -10,6 +10,12 @@ import("//chrome/process_version_rc_template.gni")
 
 assert(is_win)
 
+midl("brave_wireguard_manager_idl") {
+  sources = [ "brave_wireguard_manager_idl.idl" ]
+
+  writes_tlb = true
+}
+
 copy("brave_vpn_wireguard_binaries") {
   sources = [
     "//brave/third_party/brave-vpn-wireguard-nt-dlls/${target_cpu}/wireguard.dll",
@@ -18,39 +24,24 @@ copy("brave_vpn_wireguard_binaries") {
   outputs = [ "$root_out_dir/{{source_file_part}}" ]
 }
 
-midl("brave_wireguard_manager_idl") {
-  sources = [ "brave_wireguard_manager_idl.idl" ]
-
-  writes_tlb = true
-}
-
 executable("brave_vpn_wireguard_service") {
   sources = [
     "brave_vpn_wireguard_service.rc",
-    "brave_wireguard_manager.cc",
-    "brave_wireguard_manager.h",
     "brave_wireguard_service_crash_reporter_client.cc",
     "brave_wireguard_service_crash_reporter_client.h",
-    "install_utils.cc",
-    "install_utils.h",
     "main.cc",
-    "service_main.cc",
-    "service_main.h",
-    "wireguard_tunnel_service.cc",
-    "wireguard_tunnel_service.h",
   ]
 
   deps = [
     ":brave_vpn_wireguard_binaries",
     ":version_resources",
     "common",
+    "service",
     "status_tray",
     "//base",
     "//base:base_static",
-    "//brave/components/brave_vpn/browser/connection/common/win",
     "//build/win:default_exe_manifest",
     "//chrome/install_static:install_static_util",
-    "//chrome/installer/util:with_no_strings",
     "//components/crash/core/app",
     "//components/crash/core/app:crash_export_thunks",
     "//components/crash/core/app:run_as_crashpad_handler",
