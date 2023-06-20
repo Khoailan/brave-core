@@ -76,6 +76,8 @@
 #include "brave/components/cosmetic_filters/browser/cosmetic_filters_resources.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "brave/components/brave_shields/browser/ad_block_service.h"
+#include "brave/components/brave_wallet/browser/brave_wallet_prefs.h"
+#include "brave/browser/brave_wallet/brave_wallet_service_factory.h"
 
 using namespace std::chrono_literals;
 
@@ -173,11 +175,13 @@ public:
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  Profile* GetProfile() {
+    return chrome_test_utils::GetProfile(this);
+  }
 
 
-
-  PrefService* GetPrefs() { return profile_->GetPrefs(); }
-  TestingPrefServiceSimple* GetLocalState() { return local_state_->Get(); }
+  PrefService* GetPrefs() { return TabModelList::models()[0]->GetProfile()->GetPrefs(); }
+  //TestingPrefServiceSimple* GetLocalState() { return local_state_->Get(); }
  
   base::FilePath get_temp_path() const { return temp_dir_.GetPath(); }
   bool has_mhtml_callback_run() const { return has_mhtml_callback_run_; }
@@ -256,37 +260,40 @@ protected:
 
     LOG(INFO) << "InitWallet_20";
 
-   scoped_feature_list_.InitAndEnableFeature(
-        brave_wallet::features::kNativeBraveWalletFeature);
+  //  scoped_feature_list_.InitAndEnableFeature(
+  //       brave_wallet::features::kNativeBraveWalletFeature);
 
-/**/     TestingProfile::Builder builder;
-    auto prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(prefs->registry());
-    builder.SetPrefService(std::move(prefs));
+//    TestingProfile::Builder builder;
+    // builder.SetPrefService(std::move(prefs));
     LOG(INFO) << "InitWallet_30";
-    profile_ = builder.Build();
+    // profile_ =  builder.Build();
     LOG(INFO) << "InitWallet_40";
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
+    // local_state_ = std::make_unique<ScopedTestingLocalState>(
+    //     TestingBrowserProcess::GetGlobal());
     LOG(INFO) << "InitWallet_50";
-    keyring_service_ =
-        brave_wallet::KeyringServiceFactory::GetServiceForContext(profile_.get());
-    json_rpc_service_ =
-        brave_wallet::JsonRpcServiceFactory::GetServiceForContext(profile_.get());
-    json_rpc_service_->SetAPIRequestHelperForTesting(
-        shared_url_loader_factory_);
-    tx_service = brave_wallet::TxServiceFactory::GetServiceForContext(profile_.get());
-    wallet_service_ = std::make_unique<brave_wallet::BraveWalletService>(
-        shared_url_loader_factory_,
-        brave_wallet::BraveWalletServiceDelegate::Create(profile_.get()), keyring_service_,
-        json_rpc_service_, tx_service, GetPrefs(), GetLocalState());
-    eth_allowance_manager_ = std::make_unique<brave_wallet::EthAllowanceManager>(
-        json_rpc_service_, keyring_service_, GetPrefs());
+    // keyring_service_ =
+    //     brave_wallet::KeyringServiceFactory::GetServiceForContext(GetProfile());
+    // json_rpc_service_ =
+    //     brave_wallet::JsonRpcServiceFactory::GetServiceForContext(GetProfile());
+    // json_rpc_service_->SetAPIRequestHelperForTesting(
+    //     shared_url_loader_factory_);
+    // tx_service = brave_wallet::TxServiceFactory::GetServiceForContext(GetProfile());
+    // wallet_service_ = std::make_unique<brave_wallet::BraveWalletService>(
+    //     shared_url_loader_factory_,
+    //     brave_wallet::BraveWalletServiceDelegate::Create(GetProfile()), keyring_service_,
+    //     json_rpc_service_, tx_service, GetPrefs(), GetPrefs());//GetLocalState());
+    // eth_allowance_manager_ = std::make_unique<brave_wallet::EthAllowanceManager>(
+    //     json_rpc_service_, keyring_service_, GetPrefs());
 
+    wallet_service_ = brave_wallet::BraveWalletServiceFactory::GetServiceForContext(GetProfile());
+    LOG(INFO) << "InitWallet_55";
+    keyring_service_ = KeyringServiceFactory::GetServiceForContext(GetProfile());
+    LOG(INFO) << "InitWallet_60";
+    
     base::RunLoop run_loop;
     keyring_service_->RestoreWallet(kMnemonic1, kPasswordBrave, false,
         base::BindLambdaForTesting([&](bool success) {
+          LOG(INFO) << "InitWallet_70";
           ASSERT_TRUE(success);
           run_loop.Quit();
         }));
@@ -308,12 +315,12 @@ protected:
 
     LOG(INFO) << "!!! pak_path_base:" << pak_path_base << " brave_resources_pak_path:" << brave_resources_pak_path;
  */
-    LOG(INFO) << "InitWallet_5";
+    LOG(INFO) << "InitWallet_80";
 
      brave_wallet::SetDefaultEthereumWallet(
        TabModelList::models()[0]->GetProfile()->GetPrefs(),
        brave_wallet::mojom::DefaultWallet::BraveWallet);
-    LOG(INFO) << "InitWallet_6";    
+    LOG(INFO) << "InitWallet_90";    
   }
 
   base::ScopedTempDir temp_dir_;
@@ -322,13 +329,13 @@ protected:
   absl::optional<std::string> file_digest_;
 
   std::unique_ptr<TestWebUIControllerFactory> factory_;  
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-  std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // std::unique_ptr<ScopedTestingLocalState> local_state_;
+  // std::unique_ptr<TestingProfile> profile_;
+  // // base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<brave_wallet::KeyringService> keyring_service_;
-  raw_ptr<brave_wallet::JsonRpcService> json_rpc_service_;
-  raw_ptr<brave_wallet::TxService> tx_service;
-  std::unique_ptr<brave_wallet::BraveWalletService> wallet_service_;
+  // raw_ptr<brave_wallet::JsonRpcService> json_rpc_service_;
+  // raw_ptr<brave_wallet::TxService> tx_service;
+  raw_ptr<brave_wallet::BraveWalletService> wallet_service_;
   std::unique_ptr<brave_wallet::EthAllowanceManager> eth_allowance_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
  
@@ -350,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserTestSwap, TestSwapPageAppearing) {
   auto* web_contents = GetActiveWebContents();
 
   content::WebContentsConsoleObserver console_observer(web_contents);
-  //console_observer.SetPattern("*Error*");
+  console_observer.SetPattern("*Error*");
   web_contents->GetController().LoadURLWithParams(params);
   web_contents->GetOutermostWebContents()->Focus();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
@@ -366,11 +373,11 @@ LOG(INFO) << "!!!Error: " << result.error;
 */
 
 
-//  EXPECT_FALSE(console_observer.Wait()) << "Console must not contain any errors: " << GetConsoleMessages(console_observer);
+  EXPECT_FALSE(console_observer.Wait()) << "Console must not contain any errors: " << GetConsoleMessages(console_observer);
   
   GenerateHtml("swap_page_content", false);
 
-LOG(INFO) << "Console: \n" << GetConsoleMessages(console_observer);
+//LOG(INFO) << "Console: \n" << GetConsoleMessages(console_observer);
 
 }
 
