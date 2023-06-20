@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -135,16 +136,12 @@ public class ConnectAccountFragment extends BaseDAppsFragment
             Log.e(TAG, "initComponents " + e);
         }
         assert mWalletModel != null;
-        mWalletModel.getKeyringModel().mAccountAllAccountsPair.observe(
-                getViewLifecycleOwner(), accountInfoListPair -> {
-                    mSelectedAccount = accountInfoListPair.first;
-                    List<AccountInfo> accountInfos = new ArrayList<>(accountInfoListPair.second);
-                    if (mSelectedAccount != null) {
-                        Utils.removeIf(accountInfos,
-                                account
-                                -> account.accountId.coin != mSelectedAccount.accountId.coin);
-                    }
-                    mAccountInfos = accountInfos.toArray(new AccountInfo[0]);
+        mWalletModel.getKeyringModel().mAllAccountsInfo.observe(
+                getViewLifecycleOwner(), allAccounts -> {
+                    mSelectedAccount = allAccounts.selectedAccount;
+                    mAccountInfos = Utils.filterAccountsByCoin(allAccounts.accounts,
+                                                 mSelectedAccount.accountId.coin)
+                                            .toArray(new AccountInfo[0]);
                     updateAccounts();
                 });
     }

@@ -66,8 +66,8 @@ public class WalletModel {
                 mAssetRatioService, mCryptoActions, mSwapService);
         mDappsModel = new DappsModel(mJsonRpcService, mBraveWalletService, mKeyringService,
                 mCryptoModel.getPendingTxHelper());
-        mKeyringModel = new KeyringModel(mContext, mKeyringService, mJsonRpcService,
-                mCryptoModel.getSharedData(), mBraveWalletService, mCryptoActions);
+        mKeyringModel =
+                new KeyringModel(mContext, mKeyringService, mBraveWalletService, mCryptoActions);
         mMarketModel = new MarketModel(mAssetRatioService);
         // be careful with dependencies, must avoid cycles
         mCryptoModel.setAccountInfosFromKeyRingModel(mKeyringModel.mAccountInfos);
@@ -94,7 +94,7 @@ public class WalletModel {
                 mAssetRatioService);
         mDappsModel.resetServices(
                 mJsonRpcService, mBraveWalletService, mCryptoModel.getPendingTxHelper());
-        mKeyringModel.resetService(mContext, mKeyringService, braveWalletService, jsonRpcService);
+        mKeyringModel.resetService(mContext, mKeyringService, braveWalletService);
         mMarketModel.resetService(mAssetRatioService);
         init();
     }
@@ -108,11 +108,8 @@ public class WalletModel {
         mOriginInfo = originInfo;
         mOrigin = JavaUtils.safeVal(mOriginInfo, originInfo1 -> originInfo1.origin);
         mCryptoModel.setOrigin(mOrigin);
-        mKeyringModel.setOrigin(mOrigin);
         getNetworkModel().setOrigin(mOrigin);
-        // Update default network, account in domain models.
-        mBraveWalletService.getSelectedCoin(
-                coin -> { mCryptoActions.updateCoinAccountNetworkInfo(coin); });
+        mCryptoModel.updateCoinType();
     }
 
     public Origin getActiveOrigin() {
@@ -244,7 +241,6 @@ public class WalletModel {
                 return;
             }
             // Update coin
-            mBraveWalletService.setSelectedCoin(coin);
             mCryptoModel.updateCoinType(coin, isCoinUpdated -> {
                 // Update account per selected coin
                 mKeyringModel.update();

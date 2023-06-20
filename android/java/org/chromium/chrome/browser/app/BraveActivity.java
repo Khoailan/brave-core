@@ -1578,16 +1578,15 @@ public abstract class BraveActivity<C extends ChromeActivityComponent> extends C
                 this, transactionInfo -> {
                     // don't show dapps panel if the wallet is locked and requests are being
                     // processed by the approve dialog already
-                    mWalletModel.getKeyringModel().getKeyringInfo(keyringInfo -> {
-                        if (transactionInfo != null && keyringInfo != null && !keyringInfo.isLocked
+                    mKeyringService.isLocked(locked -> {
+                        if (transactionInfo != null && !locked
                                 && !isProcessingPendingDappsTxRequest) {
                             isProcessingPendingDappsTxRequest = true;
                             openBraveWalletDAppsActivity(
                                     BraveWalletDAppsActivity.ActivityType.CONFIRM_TRANSACTION);
                         }
                         // update badge if there's a pending tx
-                        if (transactionInfo != null && keyringInfo != null
-                                && !keyringInfo.isLocked) {
+                        if (transactionInfo != null && !locked) {
                             updateWalletBadgeVisibility();
                         }
                     });

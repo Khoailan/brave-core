@@ -46,6 +46,7 @@ import org.chromium.brave_wallet.mojom.AccountInfo;
 import org.chromium.brave_wallet.mojom.AssetPriceTimeframe;
 import org.chromium.brave_wallet.mojom.BlockchainToken;
 import org.chromium.brave_wallet.mojom.CoinType;
+import org.chromium.brave_wallet.mojom.KeyringId;
 import org.chromium.brave_wallet.mojom.NetworkInfo;
 import org.chromium.brave_wallet.mojom.TransactionInfo;
 import org.chromium.chrome.R;
@@ -77,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class AssetDetailActivity
         extends BraveWalletBaseActivity implements OnWalletListItemClick, ApprovedTxObserver {
@@ -375,10 +377,14 @@ public class AssetDetailActivity
         mWalletTxCoinAdapter =
                 new WalletCoinAdapter(WalletCoinAdapter.AdapterType.VISIBLE_ASSETS_LIST);
         if (JavaUtils.anyNull(mWalletModel, mAssetNetwork)) return;
-        mWalletModel.getKeyringModel().getKeyringPerId(
-                AssetUtils.getKeyring(mAssetNetwork.coin, mChainId), keyringInfo -> {
-                    if (keyringInfo == null) return;
-                    mAccountInfos = keyringInfo.accountInfos;
+        @CoinType.EnumType
+        int keyringId = AssetUtils.getKeyring(mAssetNetwork.coin, mChainId);
+        LiveDataUtil.observeOnce(
+                mWalletModel.getKeyringModel().mAccountInfos, accounts -> {
+                    mAccountInfos = accounts.stream()
+                                            .filter(acc -> acc.accountId.keyringId == keyringId)
+                                            .toArray(AccountInfo[] ::new);
+
                     WalletListItemModel thisAssetItemModel = new WalletListItemModel(
                             R.drawable.ic_eth, mAsset.name, mAsset.symbol, mAsset.tokenId, "", "");
                     LiveDataUtil.observeOnce(

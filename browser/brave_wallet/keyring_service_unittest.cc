@@ -2550,20 +2550,18 @@ TEST_F(KeyringServiceUnitTest, SelectImportedFilecoinAccount) {
 
   ASSERT_EQ(service.GetSelectedWalletAccount(), imported);
 #else
-  ASSERT_EQ(absl::nullopt,
-            ImportFilecoinAccount(
-                &service, "fil m acc 1",
-                "7b2254797065223a22736563703235366b31222c22507269766174"
-                "654b6579223a224169776f6a344469323155316844776835735348"
-                "434d7a37342b346c45303472376e5349454d706d6258493d227d",
-                mojom::kFilecoinMainnet));
-  ASSERT_EQ(absl::nullopt,
-            ImportFilecoinAccount(
-                &service, "fil t acc 2",
-                "7b2254797065223a22736563703235366b31222c22507269766174"
-                "654b6579223a224169776f6a344469323155316844776835735348"
-                "434d7a37342b346c45303472376e5349454d706d6258493d227d",
-                mojom::kFilecoinTestnet));
+  ASSERT_FALSE(ImportFilecoinAccount(
+      &service, "fil m acc 1",
+      "7b2254797065223a22736563703235366b31222c22507269766174"
+      "654b6579223a224169776f6a344469323155316844776835735348"
+      "434d7a37342b346c45303472376e5349454d706d6258493d227d",
+      mojom::kFilecoinMainnet));
+  ASSERT_FALSE(ImportFilecoinAccount(
+      &service, "fil t acc 2",
+      "7b2254797065223a22736563703235366b31222c22507269766174"
+      "654b6579223a224169776f6a344469323155316844776835735348"
+      "434d7a37342b346c45303472376e5349454d706d6258493d227d",
+      mojom::kFilecoinTestnet));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
