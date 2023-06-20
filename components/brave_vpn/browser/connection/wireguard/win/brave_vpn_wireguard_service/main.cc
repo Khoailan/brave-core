@@ -78,30 +78,41 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
     PLOG(ERROR) << "Failed to initialize COM";
     return -1;
   }
+  // User level command line. In this mode creates an invisible window and sets
+  // an icon in the status tray to interact with the user. The icon shows a
+  // pop-up menu to control the connection of the Wireguard VPN without
+  // interacting with the browser.
+  if (command_line->HasSwitch(
+          brave_vpn::kBraveVpnWireguardServiceInteractiveSwitchName)) {
+    return brave_vpn::StatusTrayRunner::GetInstance()->Run();
+  }
+
+  // System level command line. In this mode, loads the tunnel.dll and passes it
+  // the path to the config. all control of the service is given to tunnel.dll,
+  // stops when execution returns.
   if (command_line->HasSwitch(
           brave_vpn::kBraveVpnWireguardServiceConnectSwitchName)) {
     return brave_vpn::wireguard::RunWireguardTunnelService(
         command_line->GetSwitchValuePath(
             brave_vpn::kBraveVpnWireguardServiceConnectSwitchName));
   }
-  if (command_line->HasSwitch(
-          brave_vpn::kBraveVpnWireguardServiceInteractiveSwitchName)) {
-    return brave_vpn::StatusTrayRunner::GetInstance()->Run();
-  }
 
-  // Register and configure windows service.
+  // System level command line. Makes registeration and configuration for
+  // BraveVPNWireguardService windows service. Used by the installer.
   if (command_line->HasSwitch(
           brave_vpn::kBraveVpnWireguardServiceInstallSwitchName)) {
     auto success = brave_vpn::InstallBraveWireguardService();
     return success ? 0 : 1;
   }
 
+  // System level command line. Unregisters BraveVPNWireguardService
+  // windows service and removes stored data. Used by the uninstaller.
   if (command_line->HasSwitch(
           brave_vpn::kBraveVpnWireguardServiceUnnstallSwitchName)) {
     auto success = brave_vpn::UninstallBraveWireguardService();
     return success ? 0 : 1;
   }
 
-  // Run the service.
+  // Runs BraveVpnWireguardService, called by system SCM.
   return brave_vpn::WireguardServiceRunner::GetInstance()->RunAsService();
 }
