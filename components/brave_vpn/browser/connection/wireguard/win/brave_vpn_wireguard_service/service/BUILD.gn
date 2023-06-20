@@ -13,8 +13,8 @@ source_set("service") {
     "brave_wireguard_manager.h",
     "install_utils.cc",
     "install_utils.h",
-    "service_main.cc",
-    "service_main.h",
+    "wireguard_service_runner.cc",
+    "wireguard_service_runner.h",
     "wireguard_tunnel_service.cc",
     "wireguard_tunnel_service.h",
   ]
